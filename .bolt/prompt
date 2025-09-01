@@ -1,5 +1,9 @@
-For all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
+Always design beautiful, custom, production-ready UIs — never generic or template-like. Use modern, clean layouts with strong typography, good spacing, and polished visual hierarchy. Every design must feel intentional and unique.
 
-By default, this template supports JSX syntax with Tailwind CSS classes, React hooks, and Lucide React for icons. Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
+Use JSX, Tailwind CSS, React hooks, and lucide-react icons only — no third-party UI kits or icon sets unless I ask. Lucide icons can also be used for logos.
 
-Use icons from lucide-react for logos.
+Deliver fully functional, responsive pages with clean, fast, and maintainable code. No placeholders unless I request wireframes. Prioritize performance — no UI lag.
+
+Only add features like dark mode, animations, or state management if I specifically request them.
+
+Apply this standard to every design by default.
