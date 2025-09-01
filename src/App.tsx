@@ -3,6 +3,7 @@ import { Search, Plus, Code2, Users, Star, TrendingUp, LogOut, Lock, User, Phone
 import { ProjectCard } from './components/ProjectCard';
 import { ProjectUpload } from './components/ProjectUpload';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
+import { ShareModal } from './components/ShareModal';
 import { Project } from './types';
 import { useProjects } from './hooks/useProjects';
 import { signInWithOTP, verifyOTP, signOut } from './lib/supabase';
@@ -16,6 +17,8 @@ function App() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showProjectDetail, setShowProjectDetail] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [sharingProject, setSharingProject] = useState<Project | null>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authStep, setAuthStep] = useState<'phone' | 'otp'>('phone');
@@ -37,7 +40,18 @@ function App() {
     if (authStatus === 'authenticated') {
       setIsAuthenticated(true);
     }
-  }, []);
+
+    // Check for shared project in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedProjectId = urlParams.get('project');
+    if (sharedProjectId && projects.length > 0) {
+      const sharedProject = projects.find(p => p.id === sharedProjectId);
+      if (sharedProject) {
+        setSelectedProject(sharedProject);
+        setShowProjectDetail(true);
+      }
+    }
+  }, [projects]);
 
   // Filter projects based on search and category
   useEffect(() => {
@@ -93,6 +107,10 @@ function App() {
     setShowProjectDetail(true);
   };
 
+  const handleShareProject = (project: Project) => {
+    setSharingProject(project);
+    setShowShare(true);
+  };
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthForm(prev => ({ ...prev, isLoading: true, error: '' }));
@@ -408,6 +426,7 @@ function App() {
                   <ProjectCard
                     project={project}
                     onClick={handleProjectClick}
+                    onShare={handleShareProject}
                     onEdit={isAuthenticated ? (project) => {
                       setEditingProject(project);
                       setShowUpload(true);
@@ -612,7 +631,18 @@ function App() {
           setShowProjectDetail(false);
           setSelectedProject(null);
         }}
+        onShare={handleShareProject}
         isAdmin={isAuthenticated}
+      />
+
+      {/* Share Modal */}
+      <ShareModal
+        project={sharingProject}
+        isOpen={showShare}
+        onClose={() => {
+          setShowShare(false);
+          setSharingProject(null);
+        }}
       />
     </div>
   );

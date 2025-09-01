@@ -1,11 +1,12 @@
 import React from 'react';
-import { X, MessageCircle, Tag, Sparkles, Star, Play, Pause } from 'lucide-react';
+import { X, MessageCircle, Tag, Sparkles, Star, Play, Share2 } from 'lucide-react';
 import { Project } from '../types';
 
 interface ProjectDetailModalProps {
   project: Project | null;
   isOpen: boolean;
   onClose: () => void;
+  onShare?: (project: Project) => void;
   isAdmin?: boolean;
 }
 
@@ -13,6 +14,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   project,
   isOpen,
   onClose,
+  onShare,
   isAdmin = false
 }) => {
   const [showVideo, setShowVideo] = React.useState(false);
@@ -151,13 +153,25 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
               {/* Contact Button */}
               <div className="pt-4">
-                <button
-                  onClick={handleContactClick}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                  Contact Developer on WhatsApp
-                </button>
+                <div className="space-y-3">
+                  <button
+                    onClick={handleContactClick}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    Contact Developer on WhatsApp
+                  </button>
+                  
+                  {onShare && (
+                    <button
+                      onClick={() => onShare(project)}
+                      className="w-full bg-gray-800 hover:bg-gray-700 text-white py-3 px-6 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-3 border border-gray-600 transform hover:scale-105"
+                    >
+                      <Share2 className="w-5 h-5" />
+                      Share This Project
+                    </button>
+                  )}
+                </div>
                 <p className="text-gray-400 text-sm text-center mt-2">
                   Get in touch to discuss this project or collaborate
                 </p>

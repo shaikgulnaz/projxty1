@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag, Sparkles, Edit3, Trash2, Star } from 'lucide-react';
+import { Tag, Sparkles, Edit3, Trash2, Star, Share2 } from 'lucide-react';
 import { Project } from '../types';
 
 interface ProjectCardProps {
@@ -7,10 +7,11 @@ interface ProjectCardProps {
   onClick?: (project: Project) => void;
   onEdit?: (project: Project) => void;
   onDelete?: (project: Project) => void;
+  onShare?: (project: Project) => void;
   isAdmin?: boolean;
 }
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, onEdit, onDelete, isAdmin = false }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, onEdit, onDelete, onShare, isAdmin = false }) => {
   const [isHovered, setIsHovered] = React.useState(false);
 
   return (
@@ -47,6 +48,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, onEd
         
         {/* Edit Button for Host */}
         <div className={`absolute ${isAdmin ? 'top-12' : 'top-3'} left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2`}>
+          {onShare && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare(project);
+              }}
+              className="p-2 glass hover:bg-gray-700 hover:text-white rounded-full shadow-lg transition-all duration-300 border border-gray-600"
+              title="Share Project"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+          )}
           {onEdit && (
             <button
               onClick={(e) => {
