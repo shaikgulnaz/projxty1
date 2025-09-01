@@ -14,6 +14,7 @@ export interface Database {
           updated_at: string;
           stars: number;
           hackathon_code: string | null;
+          video_url: string;
         };
         Insert: {
           id?: string;
@@ -27,6 +28,7 @@ export interface Database {
           updated_at?: string;
           stars?: number;
           hackathon_code?: string | null;
+          video_url: string;
         };
         Update: {
           id?: string;
@@ -40,6 +42,7 @@ export interface Database {
           updated_at?: string;
           stars?: number;
           hackathon_code?: string | null;
+          video_url?: string;
         };
       };
     };

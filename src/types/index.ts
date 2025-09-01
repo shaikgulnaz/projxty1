@@ -3,6 +3,7 @@ export interface Project {
   title: string;
   description: string;
   image: string;
+  videoUrl: string;
   category: string;
   technologies: string[];
   createdAt: string;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, MessageCircle, Tag, Sparkles, Star } from 'lucide-react';
+import { X, MessageCircle, Tag, Sparkles, Star, Play, Pause } from 'lucide-react';
 import { Project } from '../types';
 
 interface ProjectDetailModalProps {
@@ -15,12 +15,44 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   onClose,
   isAdmin = false
 }) => {
+  const [showVideo, setShowVideo] = React.useState(false);
+  const [isVideoLoading, setIsVideoLoading] = React.useState(false);
+
   if (!isOpen || !project) return null;
 
   const handleContactClick = () => {
     const message = `Hi! I'm interested in your project "${project.title}". I'd like to know more about it.`;
     const whatsappUrl = `https://wa.me/916361064550?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
+  };
+
+  const getEmbedUrl = (url: string) => {
+    // YouTube
+    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
+    if (youtubeMatch) {
+      return `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&rel=0`;
+    }
+    
+    // Vimeo
+    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeoMatch) {
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
+    }
+    
+    // Direct video file
+    return url;
+  };
+
+  const handleVideoToggle = () => {
+    if (!showVideo) {
+      setIsVideoLoading(true);
+      setShowVideo(true);
+      // Simulate loading time for better UX
+      setTimeout(() => setIsVideoLoading(false), 1000);
+    } else {
+      setShowVideo(false);
+      setIsVideoLoading(false);
+    }
   };
 
   return (
@@ -134,13 +166,77 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
             {/* Right Side - Project Image */}
             <div className="space-y-4">
-              <div className="relative overflow-hidden rounded-xl bg-gray-900 aspect-video">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+              <div className="relative overflow-hidden rounded-xl bg-gray-900 aspect-video group">
+                {showVideo ? (
+                  <div className="relative w-full h-full">
+                    {isVideoLoading ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black">
+                        <div className="flex flex-col items-center gap-4">
+                          <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+                          <p className="text-white text-sm">Loading video...</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {project.videoUrl.includes('youtube.com') || project.videoUrl.includes('youtu.be') || project.videoUrl.includes('vimeo.com') ? (
+                          <iframe
+                            src={getEmbedUrl(project.videoUrl)}
+                            className="w-full h-full rounded-xl"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            title={project.title}
+                          />
+                        ) : (
+                          <video
+                            src={project.videoUrl}
+                            className="w-full h-full object-cover rounded-xl"
+                            controls
+                            autoPlay
+                            title={project.title}
+                          />
+                        )}
+                      </>
+                    )}
+                    
+                    {/* Close Video Button */}
+                    <button
+                      onClick={handleVideoToggle}
+                      className="absolute top-3 right-3 p-2 bg-black/80 hover:bg-black text-white rounded-full transition-all duration-300 backdrop-blur-sm border border-gray-600"
+                      title="Close video"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                    
+                    {/* Play Button Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleVideoToggle();
+                        }}
+                        className="bg-black/80 hover:bg-black text-white p-4 rounded-full transition-all duration-300 transform hover:scale-110 backdrop-blur-sm border border-gray-600 shadow-2xl"
+                        title="Play project video"
+                      >
+                        <Play className="w-8 h-8 ml-1" fill="currentColor" />
+                      </button>
+                    </div>
+                    
+                    {/* Video Available Indicator */}
+                    <div className="absolute bottom-3 right-3 bg-black/80 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 shadow-lg backdrop-blur-sm border border-gray-600">
+                      <Play className="w-3 h-3" />
+                      Video Available
+                    </div>
+                  </>
+                )}
               </div>
               
               {/* Additional project stats or info can go here */}
@@ -150,6 +246,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                   <li>• Built with modern technologies</li>
                   <li>• Production-ready implementation</li>
                   <li>• Responsive and user-friendly design</li>
+                  <li>• Video demonstration available</li>
                   <li>• Available for collaboration</li>
                 </ul>
               </div>

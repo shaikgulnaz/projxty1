@@ -19,6 +19,7 @@ export const ProjectUpload: React.FC<ProjectUploadProps> = ({
     title: editingProject?.title || '',
     description: editingProject?.description || '',
     image: editingProject?.image || '',
+    videoUrl: editingProject?.videoUrl || '',
     category: editingProject?.category || '',
     technologies: editingProject?.technologies.join(', ') || '',
     featured: editingProject?.featured || false,
@@ -46,6 +47,7 @@ export const ProjectUpload: React.FC<ProjectUploadProps> = ({
       title: '',
       description: '',
       image: '',
+      videoUrl: '',
       category: '',
       technologies: '',
       featured: false,
@@ -145,8 +147,27 @@ export const ProjectUpload: React.FC<ProjectUploadProps> = ({
                 onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 className="w-full px-4 py-2 glass border border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-transparent text-white placeholder-gray-400"
                 placeholder="https://example.com/image.jpg"
+                required
               />
             </div>
+          </div>
+
+          {/* Video URL */}
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Video URL
+            </label>
+            <input
+              type="url"
+              value={formData.videoUrl}
+              onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+              className="w-full px-4 py-3 glass border border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300 text-white placeholder-gray-400"
+              placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+              required
+            />
+            <p className="text-gray-400 text-sm mt-2">
+              Supports YouTube, Vimeo, or direct video file URLs
+            </p>
           </div>
 
           {/* Category and Technologies */}
