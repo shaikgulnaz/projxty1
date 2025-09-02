@@ -4,15 +4,28 @@ import { ProjectCard } from './components/ProjectCard';
 import { ProjectUpload } from './components/ProjectUpload';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { ShareModal } from './components/ShareModal';
+import { SearchBar } from './components/SearchBar';
 import { Project } from './types';
 import { useProjects } from './hooks/useProjects';
+import { useSearch } from './hooks/useSearch';
+import { useDebounce } from './hooks/useDebounce';
 import { signInWithOTP, verifyOTP, signOut } from './lib/supabase';
 
 function App() {
   const { projects, loading, error, addProject, updateProject, deleteProject } = useProjects();
-  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  
+  // Debounce search term for better performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  
+  // Use intelligent search hook
+  const { searchResults, isSearching, searchStats } = useSearch({
+    projects,
+    searchTerm: debouncedSearchTerm,
+    selectedCategory
+  });
+  
   const [showUpload, setShowUpload] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -52,27 +65,6 @@ function App() {
       }
     }
   }, [projects]);
-
-  // Filter projects based on search and category
-  useEffect(() => {
-    let filtered = projects;
-
-    if (searchTerm) {
-      filtered = filtered.filter(project =>
-        project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.technologies.some(tech => 
-          tech.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-    }
-
-    if (selectedCategory) {
-      filtered = filtered.filter(project => project.category === selectedCategory);
-    }
-
-    setFilteredProjects(filtered);
-  }, [projects, searchTerm, selectedCategory]);
 
   const handleAddProject = async (projectData: Omit<Project, 'id' | 'createdAt'>) => {
     const result = await addProject(projectData);
@@ -229,7 +221,7 @@ function App() {
     );
   }
 
-  const featuredProjects = filteredProjects.filter(p => p.featured);
+  const featuredProjects = searchResults.filter(p => p.featured);
   const categories = ['Web Development', 'Mobile App', 'AI/ML', 'Blockchain', 'Computer Vision', 'Cyber Security', 'Others'];
 
   const stats = {
@@ -305,7 +297,16 @@ function App() {
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 neon-glow">
                 Code That Actually <span className="gradient-text-fire">Slaps</span> 🔥
               </h2>
-              <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed">
+                  ? (
+                      <span>
+                        No projects match your criteria.
+                        {searchStats.suggestions.length > 0 && (
+                          <span className="block mt-2 text-sm">
+                            Try searching for: <strong>{searchStats.suggestions[0]}</strong>
+                          </span>
+                        )}
+                      </span>
+                    )
                 No cap - these projects are straight fire! 🚀 From AI that hits different to web apps that go hard. 
                 Perfect inspo for your next assignment or side hustle 💯
               </p>
@@ -354,16 +355,13 @@ function App() {
             <div className="space-y-4">
               <div className="space-y-3">
                 {/* Search Bar */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Search projects..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 glass border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-all duration-200 text-white placeholder-gray-400"
-                  />
-                </div>
+                <SearchBar
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  isSearching={isSearching}
+                  searchStats={searchStats}
+                  placeholder="Search projects by title, tech, category..."
+                />
                 
                 {/* Category Filter Buttons */}
                 <div className="flex flex-wrap gap-2 justify-center">
@@ -414,10 +412,36 @@ function App() {
           <div className="text-center mb-8">
             <h3 className="text-3xl font-bold text-white slide-in">All Projects</h3>
             <div className="w-24 h-1 bg-white mx-auto mt-4 rounded-full"></div>
+            
+            {/* Search Results Summary */}
+            {(searchTerm || selectedCategory) && (
+              <div className="mt-4 text-gray-300 text-sm slide-in" style={{ animationDelay: '0.2s' }}>
+                {isSearching ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Searching...
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <p>
+                      Showing {searchResults.length} of {projects.length} projects
+                      {searchTerm && ` for "${searchTerm}"`}
+                      {selectedCategory && ` in ${selectedCategory}`}
+                    </p>
+                    {searchStats.searchTime > 0 && (
+                      <p className="text-gray-400 text-xs">
+                        Search completed in {searchStats.searchTime}ms
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-          {filteredProjects.length > 0 ? (
+          
+          {searchResults.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {filteredProjects.map((project, index) => (
+              {searchResults.map((project, index) => (
                 <div
                   key={project.id}
                   className="slide-in"
