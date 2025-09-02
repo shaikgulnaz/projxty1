@@ -297,16 +297,7 @@ function App() {
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 neon-glow">
                 Code That Actually <span className="gradient-text-fire">Slaps</span> 🔥
               </h2>
-                  ? (
-                      <span>
-                        No projects match your criteria.
-                        {searchStats.suggestions.length > 0 && (
-                          <span className="block mt-2 text-sm">
-                            Try searching for: <strong>{searchStats.suggestions[0]}</strong>
-                          </span>
-                        )}
-                      </span>
-                    )
+              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
                 No cap - these projects are straight fire! 🚀 From AI that hits different to web apps that go hard. 
                 Perfect inspo for your next assignment or side hustle 💯
               </p>
