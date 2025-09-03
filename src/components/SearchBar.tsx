@@ -69,13 +69,16 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   // Clear search
-  const handleClear = () => {
+  const handleClear = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onSearchChange('');
     inputRef.current?.focus();
   };
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    e.stopPropagation();
     if (e.key === 'Escape') {
       setShowSuggestions(false);
       inputRef.current?.blur();
@@ -129,6 +132,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             // Delay hiding suggestions to allow clicks
             setTimeout(() => setShowSuggestions(false), 150);
           }}
+          onClick={(e) => e.stopPropagation()}
           onKeyDown={handleKeyDown}
           className={`w-full pl-10 pr-12 py-3 glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300 text-white placeholder-gray-400 ${
             isFocused 
@@ -140,6 +144,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         {/* Clear Button */}
         {searchTerm && (
           <button
+            type="button"
             onClick={handleClear}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-all duration-200"
             title="Clear search"
@@ -186,6 +191,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 {searchStats.suggestions.map((suggestion, index) => (
                   <button
                     key={index}
+                    type="button"
                     onClick={() => handleSuggestionClick(suggestion)}
                     className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 capitalize"
                   >
@@ -207,11 +213,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 {recentSearches.map((recent, index) => (
                   <button
                     key={index}
+                    type="button"
                     onClick={() => handleSuggestionClick(recent)}
                     className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 flex items-center justify-between group"
                   >
                     <span>{recent}</span>
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         const updated = recentSearches.filter((_, i) => i !== index);

@@ -338,12 +338,12 @@ function App() {
         {/* Search and Controls Section */}
         <section className="mb-12">
           <div className="max-w-2xl mx-auto">
-            <div className="flex items-center space-x-3 mb-6 slide-in text-center justify-center">
+            <div className="flex items-center space-x-3 mb-6 slide-in text-center justify-center" onClick={(e) => e.stopPropagation()}>
               <Search className="w-6 h-6 text-gray-400" />
               <h3 className="text-2xl font-bold text-white">Search & Filter</h3>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-4" onClick={(e) => e.stopPropagation()}>
               <div className="space-y-3">
                 {/* Search Bar */}
                 <SearchBar
@@ -355,8 +355,9 @@ function App() {
                 />
                 
                 {/* Category Filter Buttons */}
-                <div className="flex flex-wrap gap-2 justify-center">
+                <div className="flex flex-wrap gap-2 justify-center" onClick={(e) => e.stopPropagation()}>
                   <button
+                    type="button"
                     onClick={() => setSelectedCategory('')}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
                       selectedCategory === ''
@@ -369,6 +370,7 @@ function App() {
                   {categories.map(category => (
                     <button
                       key={category}
+                      type="button"
                       onClick={() => setSelectedCategory(category)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 transform hover:scale-105 ${
                         selectedCategory === category
@@ -384,6 +386,7 @@ function App() {
               
               {isAuthenticated && (
                 <button
+                  type="button"
                   onClick={() => {
                     setEditingProject(null);
                     setShowUpload(true);
