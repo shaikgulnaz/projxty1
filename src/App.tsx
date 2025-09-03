@@ -288,7 +288,7 @@ function App() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center overflow-hidden">
+      <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -304,26 +304,17 @@ function App() {
               
               {/* Creative Stats Placement */}
               <div className="relative">
-                <button
-                  onClick={() => {
-                    const projectsSection = document.getElementById('projects-section');
-                    projectsSection?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="glass rounded-2xl p-6 border border-gray-600 hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105 max-w-xs cursor-pointer group"
-                >
+                <div className="glass rounded-2xl p-6 border border-gray-600 hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105 max-w-xs">
                   <div className="flex items-center space-x-4">
                     <div className="bg-black border border-gray-600 p-3 rounded-xl">
-                      <TrendingUp className="w-6 h-6 text-white group-hover:scale-110 transition-transform duration-300" />
+                      <TrendingUp className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <span className="text-3xl font-bold text-white block group-hover:text-gray-200 transition-colors duration-300">{stats.total}</span>
-                      <p className="text-sm text-gray-300 group-hover:text-white transition-colors duration-300">Total Projects</p>
+                      <span className="text-3xl font-bold text-white block">{stats.total}</span>
+                      <p className="text-sm text-gray-300">Total Projects</p>
                     </div>
                   </div>
-                  <div className="mt-2 text-xs text-gray-400 group-hover:text-gray-300 transition-colors duration-300 opacity-0 group-hover:opacity-100">
-                    Click to view all projects
-                  </div>
-                </button>
+                </div>
                 {/* Decorative element */}
                 <div className="absolute -top-2 -right-2 w-4 h-4 bg-white rounded-full animate-pulse"></div>
               </div>
@@ -343,7 +334,7 @@ function App() {
       </section>
 
       {/* Main Content */}
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20" id="projects-section">
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         {/* Search and Controls Section */}
         <section className="mb-12">
           <div className="max-w-2xl mx-auto">
