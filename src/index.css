@@ -200,7 +200,7 @@
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -208,12 +208,94 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #666666;
-  border-radius: 4px;
+  background: #888888;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #888888;
+  background: #aaaaaa;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  /* Improve touch targets */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Optimize animations for mobile */
+  .slide-in {
+    animation-duration: 0.6s;
+  }
+  
+  /* Reduce motion for better performance */
+  @media (prefers-reduced-motion: reduce) {
+    .slide-in,
+    .floating-element,
+    .pulse-element {
+      animation: none;
+    }
+    
+    .group-hover\:scale-110:hover {
+      transform: none;
+    }
+  }
+}
+
+/* Improve text readability on mobile */
+@media (max-width: 640px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  /* Ensure minimum touch target size */
+  button, 
+  input, 
+  select, 
+  textarea,
+  .touch-manipulation {
+    min-height: 44px;
+  }
+  
+  /* Optimize font sizes for mobile readability */
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+  
+  .text-base {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+}
+
+/* Performance optimizations */
+.glass {
+  will-change: transform;
+}
+
+/* Reduce animations on low-end devices */
+@media (max-width: 640px) and (max-resolution: 150dpi) {
+  .floating-element,
+  .pulse-element {
+    animation: none;
+  }
+  
+  .animated-bg {
+    background: #1a1a1a;
+    animation: none;
+  }
 }
 
 /* Search animations */

@@ -47,7 +47,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     localStorage.setItem('projx_recent_searches', JSON.stringify(updated));
   };
 
-  // Handle search input
+  // Handle search input with debouncing
   const handleSearchChange = (value: string) => {
     onSearchChange(value);
     
@@ -104,14 +104,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const hasActiveSuggestions = searchStats.suggestions.length > 0 || recentSearches.length > 0;
 
   return (
-    <div className="relative w-full">
-      {/* Search Input */}
-      <div className={`relative transition-all duration-300 ${isFocused ? 'transform scale-105' : ''}`}>
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+    <div className="relative w-full" onClick={(e) => e.stopPropagation()}>
+      {/* Mobile-Optimized Search Input */}
+      <div className={`relative transition-all duration-300 ${isFocused ? 'transform scale-[1.02]' : ''}`}>
+        <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
           {isSearching ? (
-            <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 animate-spin" />
           ) : (
-            <Search className="w-5 h-5 text-gray-400" />
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
           )}
         </div>
         
@@ -134,19 +134,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           }}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={handleKeyDown}
-          className={`w-full pl-10 pr-12 py-3 glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300 text-white placeholder-gray-400 ${
+          className={`w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300 text-white placeholder-gray-400 text-base touch-manipulation ${
             isFocused 
               ? 'border-gray-400 shadow-lg shadow-gray-500/20' 
               : 'border-gray-600'
           }`}
         />
         
-        {/* Clear Button */}
+        {/* Clear Button - Touch-friendly */}
         {searchTerm && (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-all duration-200"
+            className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 p-2 hover:bg-white/10 rounded-full transition-all duration-200 touch-manipulation"
             title="Clear search"
           >
             <X className="w-4 h-4 text-gray-400 hover:text-white" />
@@ -154,13 +154,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         )}
       </div>
 
-      {/* Search Results Info */}
+      {/* Mobile-Optimized Search Results Info */}
       {searchTerm && !isSearching && (
-        <div className="mt-2 flex items-center justify-between text-sm">
+        <div className="mt-2 flex items-center justify-between text-sm px-1">
           <span className="text-gray-400">
-            {searchStats.totalResults} result{searchStats.totalResults !== 1 ? 's' : ''} found
+            {searchStats.totalResults} result{searchStats.totalResults !== 1 ? 's' : ''}
             {searchStats.searchTime > 0 && (
-              <span className="ml-2 text-gray-500">
+              <span className="ml-2 text-gray-500 hidden sm:inline">
                 ({searchStats.searchTime}ms)
               </span>
             )}
@@ -174,11 +174,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         </div>
       )}
 
-      {/* Suggestions Dropdown */}
+      {/* Mobile-Optimized Suggestions Dropdown */}
       {showSuggestions && hasActiveSuggestions && (
         <div
           ref={suggestionsRef}
-          className="absolute top-full left-0 right-0 mt-2 glass border border-gray-600 rounded-xl shadow-2xl z-50 overflow-hidden"
+          className="absolute top-full left-0 right-0 mt-2 glass border border-gray-600 rounded-xl shadow-2xl z-50 overflow-hidden max-h-64 overflow-y-auto"
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Search Suggestions */}
           {searchStats.suggestions.length > 0 && (
@@ -193,7 +194,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                     key={index}
                     type="button"
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 capitalize"
+                    className="w-full text-left px-3 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 capitalize touch-manipulation"
                   >
                     {suggestion}
                   </button>
@@ -207,17 +208,17 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             <div className="p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Clock className="w-4 h-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-300">Recent Searches</span>
+                <span className="text-sm font-medium text-gray-300">Recent</span>
               </div>
               <div className="space-y-1">
-                {recentSearches.map((recent, index) => (
+                {recentSearches.slice(0, 3).map((recent, index) => (
                   <button
                     key={index}
                     type="button"
                     onClick={() => handleSuggestionClick(recent)}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 flex items-center justify-between group"
+                    className="w-full text-left px-3 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 flex items-center justify-between group touch-manipulation"
                   >
-                    <span>{recent}</span>
+                    <span className="truncate">{recent}</span>
                     <button
                       type="button"
                       onClick={(e) => {
@@ -226,8 +227,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                         setRecentSearches(updated);
                         localStorage.setItem('projx_recent_searches', JSON.stringify(updated));
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded transition-all duration-200"
-                      title="Remove from recent searches"
+                      className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded transition-all duration-200 touch-manipulation"
+                      title="Remove"
                     >
                       <X className="w-3 h-3" />
                     </button>
