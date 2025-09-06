@@ -764,7 +764,10 @@ const FeaturedSlideshow: React.FC<{
           <img
             src={currentProject.image}
             alt={currentProject.title} 
-            className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
+            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
           />
           
           {/* Featured Badge */}

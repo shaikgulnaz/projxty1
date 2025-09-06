@@ -285,6 +285,19 @@
   will-change: transform;
 }
 
+/* Image loading optimizations */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Preload critical images */
+.hero-image,
+.featured-image {
+  content-visibility: auto;
+  contain-intrinsic-size: 400px 300px;
+}
+
 /* Reduce animations on low-end devices */
 @media (max-width: 640px) and (max-resolution: 150dpi) {
   .floating-element,
