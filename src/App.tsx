@@ -358,7 +358,7 @@ function App() {
                   <button
                     onClick={() => setShowAuth(true)}
                     className="p-3 bg-black border border-gray-600 text-white rounded-xl hover:bg-gray-900 transition-all duration-300 transform hover:scale-105"
-                    title="Admin Access"
+                    title="Login"
                   >
                     <Code2 className="w-5 h-5" />
                   </button>
@@ -422,7 +422,7 @@ function App() {
                     className="w-full flex items-center space-x-2 px-4 py-3 bg-black border border-gray-600 text-white rounded-lg hover:bg-gray-900 transition-all duration-300"
                   >
                     <Code2 className="w-5 h-5" />
-                    <span>Admin Access</span>
+                    <span>Login</span>
                   </button>
                 )}
               </div>
@@ -493,7 +493,7 @@ function App() {
                 <div className="bg-black border border-gray-600 p-2 rounded-lg">
                   <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <h2 className="text-lg sm:text-xl font-bold text-white">Admin Access</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-white">Login</h2>
               </div>
               <button
                 onClick={handleAuthClose}
