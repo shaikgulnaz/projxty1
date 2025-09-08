@@ -39,7 +39,7 @@ export const AboutPage: React.FC = () => {
         <section className="text-center mb-20">
           <div className="slide-in">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 neon-glow">
-              About <span className="gradient-text-fire">projx</span>
+              About <span className="gradient-text-fire">Projxty</span>
             </h1>
             <p className="text-xl sm:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               We're a passionate team of developers, designers, and innovators dedicated to creating 

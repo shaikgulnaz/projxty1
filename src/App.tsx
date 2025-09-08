@@ -180,6 +180,8 @@ function App() {
   const handleNavigate = (page: Page) => {
     setCurrentPage(page);
     setShowMobileMenu(false);
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     // Update URL without page reload
     window.history.pushState({}, '', page === 'home' ? '/' : `/${page}`);
   };

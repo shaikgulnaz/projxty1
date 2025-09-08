@@ -16,11 +16,33 @@ export const ContactPage: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Generate structured WhatsApp message
+    const whatsappMessage = `
+*New Contact Form Submission - Projxty*
+
+*Name:* ${formData.name}
+*Email:* ${formData.email}
+*Project Type:* ${formData.projectType || 'Not specified'}
+*Subject:* ${formData.subject}
+
+*Message:*
+${formData.message}
+
+---
+Sent from Projxty Contact Form
+    `.trim();
+    
+    // Send to WhatsApp
+    const whatsappUrl = `https://wa.me/916361064550?text=${encodeURIComponent(whatsappMessage)}`;
+    
+    // Small delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     setIsSubmitting(false);
     setSubmitted(true);
+    
+    // Open WhatsApp
+    window.open(whatsappUrl, '_blank');
     
     // Reset form after 3 seconds
     setTimeout(() => {
@@ -53,9 +75,9 @@ export const ContactPage: React.FC = () => {
     {
       icon: Mail,
       title: 'Email',
-      value: 'hello@projx.dev',
+      value: 'projxty@gmail.com',
       description: 'For detailed project discussions',
-      action: 'mailto:hello@projx.dev'
+      action: 'mailto:projxty@gmail.com'
     },
     {
       icon: MapPin,
@@ -91,7 +113,7 @@ export const ContactPage: React.FC = () => {
         <section className="text-center mb-20">
           <div className="slide-in">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 neon-glow">
-              Get In <span className="gradient-text-fire">Touch</span>
+              Contact <span className="gradient-text-fire">Projxty</span>
             </h1>
             <p className="text-xl sm:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               Ready to bring your ideas to life? Let's discuss your project and create something amazing together.
@@ -145,8 +167,8 @@ export const ContactPage: React.FC = () => {
                   <div className="bg-green-600 p-4 rounded-full w-fit mx-auto mb-4">
                     <CheckCircle className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">Message Sent!</h3>
-                  <p className="text-gray-300">Thank you for reaching out. We'll get back to you soon.</p>
+                  <h3 className="text-xl font-bold text-white mb-2">Message Sent to WhatsApp!</h3>
+                  <p className="text-gray-300">Your message has been formatted and sent to our WhatsApp. We'll respond shortly!</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -241,12 +263,12 @@ export const ContactPage: React.FC = () => {
                     {isSubmitting ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Sending Message...
+                        Preparing WhatsApp Message...
                       </>
                     ) : (
                       <>
                         <Send className="w-5 h-5" />
-                        Send Message
+                        Send via WhatsApp
                       </>
                     )}
                   </button>
