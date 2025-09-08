@@ -56,7 +56,7 @@ export const AboutPage: React.FC = () => {
               <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
                 <p>
                   Founded with a vision to bridge the gap between innovative ideas and practical solutions, 
-                  projx has grown from a small startup to a trusted technology partner for businesses worldwide.
+                  Projxty has grown from a small startup to a trusted technology partner for businesses worldwide.
                 </p>
                 <p>
                   Our journey began with a simple belief: that great software should not only solve problems 

@@ -266,7 +266,7 @@ function App() {
                 <Code2 className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                projx
+                Projxty
               </h1>
             </div>
             
