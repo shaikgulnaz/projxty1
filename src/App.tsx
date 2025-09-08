@@ -180,8 +180,6 @@ function App() {
   const handleNavigate = (page: Page) => {
     setCurrentPage(page);
     setShowMobileMenu(false);
-    // Scroll to top of page
-    window.scrollTo({ top: 0, behavior: 'smooth' });
     // Update URL without page reload
     window.history.pushState({}, '', page === 'home' ? '/' : `/${page}`);
   };
@@ -266,7 +264,7 @@ function App() {
                 <Code2 className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                Projxty
+                projx
               </h1>
             </div>
             

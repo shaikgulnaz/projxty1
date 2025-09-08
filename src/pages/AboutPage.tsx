@@ -39,7 +39,7 @@ export const AboutPage: React.FC = () => {
         <section className="text-center mb-20">
           <div className="slide-in">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 neon-glow">
-              About <span className="gradient-text-fire">Projxty</span>
+              About <span className="gradient-text-fire">projx</span>
             </h1>
             <p className="text-xl sm:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               We're a passionate team of developers, designers, and innovators dedicated to creating 
@@ -56,7 +56,7 @@ export const AboutPage: React.FC = () => {
               <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
                 <p>
                   Founded with a vision to bridge the gap between innovative ideas and practical solutions, 
-                  Projxty has grown from a small startup to a trusted technology partner for businesses worldwide.
+                  projx has grown from a small startup to a trusted technology partner for businesses worldwide.
                 </p>
                 <p>
                   Our journey began with a simple belief: that great software should not only solve problems 

@@ -285,20 +285,6 @@
   will-change: transform;
 }
 
-/* Smooth scrolling for all elements */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Better focus states for accessibility */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 2px;
-}
-
 /* Image loading optimizations */
 img {
   image-rendering: -webkit-optimize-contrast;

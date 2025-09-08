@@ -144,10 +144,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             
             <div className="text-center mt-12">
               <button
-                onClick={() => {
-                  onNavigateToProjects();
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                onClick={onNavigateToProjects}
                 className="group bg-black border border-gray-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-900 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 mx-auto"
               >
                 View All Projects
@@ -208,10 +205,7 @@ const FeaturedProjectCard: React.FC<{
         <div className="flex flex-wrap gap-2">
           {project.technologies.slice(0, 3).map((tech, index) => (
             <span
-              onClick={() => {
-                onNavigateToProjects();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              key={index}
               className="px-3 py-1 bg-gray-800 text-gray-200 rounded-full text-sm font-medium border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300"
             >
               {tech}
