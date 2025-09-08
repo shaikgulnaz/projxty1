@@ -51,6 +51,10 @@ function App() {
     otpSent: false 
   });
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  
+  // Header scroll state
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // Host credentials
   const HOST_PHONE = '6361064550';
@@ -65,6 +69,43 @@ function App() {
     { id: 'contact', label: 'Contact', icon: Mail },
   ];
 
+  // Handle scroll for header visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show header when at top of page
+      if (currentScrollY < 10) {
+        setIsHeaderVisible(true);
+      }
+      // Hide header when scrolling down, show when scrolling up
+      else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down & past threshold
+        setIsHeaderVisible(false);
+        setShowMobileMenu(false); // Close mobile menu when hiding header
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up
+        setIsHeaderVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    // Throttle scroll events for better performance
+    let ticking = false;
+    const throttledHandleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledHandleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', throttledHandleScroll);
+  }, [lastScrollY]);
   // Check authentication status on mount
   useEffect(() => {
     const authStatus = localStorage.getItem('devcode_auth');
@@ -257,7 +298,9 @@ function App() {
       </div>
 
       {/* Navigation Header */}
-      <header className="glass border-b border-gray-700 sticky top-0 z-40 backdrop-blur-xl">
+      <header className={`glass border-b border-gray-700 fixed top-0 left-0 right-0 z-40 backdrop-blur-xl transition-transform duration-300 ease-in-out ${
+        isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 sm:h-20">
             {/* Logo */}
@@ -333,7 +376,7 @@ function App() {
           </div>
           
           {/* Mobile Menu */}
-          {showMobileMenu && (
+          {showMobileMenu && isHeaderVisible && (
             <div className="lg:hidden border-t border-gray-700 py-4 space-y-2">
               {/* Navigation Items */}
               {navigationItems.map((item) => {
@@ -389,7 +432,7 @@ function App() {
       </header>
 
       {/* Page Content */}
-      <main className="relative">
+      <main className="relative pt-16 sm:pt-20">
         {currentPage === 'home' && (
           <HomePage 
             projects={projects}
