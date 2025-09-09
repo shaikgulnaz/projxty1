@@ -183,108 +183,97 @@ export const ServicesPage: React.FC = () => {
           </div>
           
           <div className="glass rounded-2xl p-6 sm:p-8 border border-gray-600 overflow-hidden">
-            <div className="relative">
-              {/* Animated scrolling tech stack */}
-              <div className="flex animate-scroll space-x-8 whitespace-nowrap">
-                {[
-                  // Frontend Technologies
-                  'React', 'Vue.js', 'Angular', 'Next.js', 'Nuxt.js', 'Svelte', 'TypeScript', 'JavaScript',
-                  'HTML5', 'CSS3', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material-UI', 'Chakra UI',
-                  
-                  // Backend Technologies
-                  'Node.js', 'Express.js', 'Python', 'Django', 'Flask', 'FastAPI', 'Java', 'Spring Boot',
-                  'C#', '.NET', 'PHP', 'Laravel', 'Ruby', 'Ruby on Rails', 'Go', 'Rust',
-                  
-                  // Mobile Development
-                  'React Native', 'Flutter', 'Swift', 'Kotlin', 'Xamarin', 'Ionic', 'Cordova',
-                  
-                  // Databases
-                  'MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Redis', 'Elasticsearch', 'Firebase',
-                  'Supabase', 'DynamoDB', 'Cassandra', 'Neo4j',
-                  
-                  // Cloud & DevOps
-                  'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins', 'GitLab CI',
-                  'GitHub Actions', 'Terraform', 'Ansible', 'Nginx', 'Apache',
-                  
-                  // AI/ML & Data Science
-                  'TensorFlow', 'PyTorch', 'Scikit-learn', 'Pandas', 'NumPy', 'OpenCV', 'Keras',
-                  'Jupyter', 'Apache Spark', 'Hadoop', 'Tableau', 'Power BI',
-                  
-                  // Blockchain & Web3
-                  'Solidity', 'Web3.js', 'Ethereum', 'Hardhat', 'Truffle', 'Metamask', 'IPFS',
-                  
-                  // Testing & Quality
-                  'Jest', 'Cypress', 'Selenium', 'Postman', 'SonarQube', 'ESLint', 'Prettier',
-                  
-                  // Version Control & Collaboration
-                  'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Confluence', 'Slack', 'Discord',
-                  
-                  // Design & Prototyping
-                  'Figma', 'Adobe XD', 'Sketch', 'InVision', 'Canva', 'Photoshop', 'Illustrator'
-                ].map((tech, index) => (
-                  <div
-                    key={index}
-                    className="flex-shrink-0 bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg px-4 py-3 transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                  >
-                    <span className="text-gray-200 font-medium text-sm">{tech}</span>
+            <div className="relative overflow-hidden">
+              {/* 3-Column Responsive Grid with Synchronized Scrolling */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-96 overflow-hidden">
+                {/* Column 1 - Frontend & UI */}
+                <div className="space-y-4 overflow-hidden">
+                  <h4 className="text-lg font-semibold text-white mb-4 text-center">Frontend & UI</h4>
+                  <div className="animate-scroll space-y-3">
+                    {[
+                      'React', 'Vue.js', 'Angular', 'Next.js', 'Nuxt.js', 'Svelte', 'TypeScript', 'JavaScript',
+                      'HTML5', 'CSS3', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material-UI', 'Chakra UI',
+                      'Figma', 'Adobe XD', 'Sketch', 'InVision', 'Canva', 'Photoshop', 'Illustrator'
+                    ].concat([
+                      'React', 'Vue.js', 'Angular', 'Next.js', 'Nuxt.js', 'Svelte', 'TypeScript', 'JavaScript',
+                      'HTML5', 'CSS3', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material-UI', 'Chakra UI',
+                      'Figma', 'Adobe XD', 'Sketch', 'InVision', 'Canva', 'Photoshop', 'Illustrator'
+                    ]).map((tech, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg px-4 py-3 transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      >
+                        <span className="text-gray-200 font-medium text-sm">{tech}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              
-              {/* Duplicate for seamless loop */}
-              <div className="flex animate-scroll-duplicate space-x-8 whitespace-nowrap">
-                {[
-                  // Frontend Technologies
-                  'React', 'Vue.js', 'Angular', 'Next.js', 'Nuxt.js', 'Svelte', 'TypeScript', 'JavaScript',
-                  'HTML5', 'CSS3', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material-UI', 'Chakra UI',
-                  
-                  // Backend Technologies
-                  'Node.js', 'Express.js', 'Python', 'Django', 'Flask', 'FastAPI', 'Java', 'Spring Boot',
-                  'C#', '.NET', 'PHP', 'Laravel', 'Ruby', 'Ruby on Rails', 'Go', 'Rust',
-                  
-                  // Mobile Development
-                  'React Native', 'Flutter', 'Swift', 'Kotlin', 'Xamarin', 'Ionic', 'Cordova',
-                  
-                  // Databases
-                  'MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Redis', 'Elasticsearch', 'Firebase',
-                  'Supabase', 'DynamoDB', 'Cassandra', 'Neo4j',
-                  
-                  // Cloud & DevOps
-                  'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins', 'GitLab CI',
-                  'GitHub Actions', 'Terraform', 'Ansible', 'Nginx', 'Apache',
-                  
-                  // AI/ML & Data Science
-                  'TensorFlow', 'PyTorch', 'Scikit-learn', 'Pandas', 'NumPy', 'OpenCV', 'Keras',
-                  'Jupyter', 'Apache Spark', 'Hadoop', 'Tableau', 'Power BI',
-                  
-                  // Blockchain & Web3
-                  'Solidity', 'Web3.js', 'Ethereum', 'Hardhat', 'Truffle', 'Metamask', 'IPFS',
-                  
-                  // Testing & Quality
-                  'Jest', 'Cypress', 'Selenium', 'Postman', 'SonarQube', 'ESLint', 'Prettier',
-                  
-                  // Version Control & Collaboration
-                  'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Confluence', 'Slack', 'Discord',
-                  
-                  // Design & Prototyping
-                  'Figma', 'Adobe XD', 'Sketch', 'InVision', 'Canva', 'Photoshop', 'Illustrator'
-                ].map((tech, index) => (
-                  <div
-                    key={`duplicate-${index}`}
-                    className="flex-shrink-0 bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg px-4 py-3 transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                  >
-                    <span className="text-gray-200 font-medium text-sm">{tech}</span>
+                </div>
+
+                {/* Column 2 - Backend & Database */}
+                <div className="space-y-4 overflow-hidden">
+                  <h4 className="text-lg font-semibold text-white mb-4 text-center">Backend & Database</h4>
+                  <div className="animate-scroll space-y-3" style={{ animationDelay: '-13.33s' }}>
+                    {[
+                      'Node.js', 'Express.js', 'Python', 'Django', 'Flask', 'FastAPI', 'Java', 'Spring Boot',
+                      'C#', '.NET', 'PHP', 'Laravel', 'Ruby', 'Ruby on Rails', 'Go', 'Rust',
+                      'MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Redis', 'Elasticsearch', 'Firebase',
+                      'Supabase', 'DynamoDB', 'Cassandra', 'Neo4j'
+                    ].concat([
+                      'Node.js', 'Express.js', 'Python', 'Django', 'Flask', 'FastAPI', 'Java', 'Spring Boot',
+                      'C#', '.NET', 'PHP', 'Laravel', 'Ruby', 'Ruby on Rails', 'Go', 'Rust',
+                      'MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Redis', 'Elasticsearch', 'Firebase',
+                      'Supabase', 'DynamoDB', 'Cassandra', 'Neo4j'
+                    ]).map((tech, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg px-4 py-3 transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      >
+                        <span className="text-gray-200 font-medium text-sm">{tech}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              
-              {/* Gradient overlays for smooth fade effect */}
-              <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-gray-900 to-transparent pointer-events-none z-10"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-900 to-transparent pointer-events-none z-10"></div>
-            </div>
+                </div>
           </div>
         </section>
 
+                {/* Column 3 - Cloud, AI/ML & DevOps */}
+                <div className="space-y-4 overflow-hidden">
+                  <h4 className="text-lg font-semibold text-white mb-4 text-center">Cloud, AI/ML & DevOps</h4>
+                  <div className="animate-scroll space-y-3" style={{ animationDelay: '-26.67s' }}>
+                    {[
+                      'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins', 'GitLab CI',
+                      'GitHub Actions', 'Terraform', 'Ansible', 'Nginx', 'Apache',
+                      'TensorFlow', 'PyTorch', 'Scikit-learn', 'Pandas', 'NumPy', 'OpenCV', 'Keras',
+                      'Jupyter', 'Apache Spark', 'Hadoop', 'Tableau', 'Power BI',
+                      'Solidity', 'Web3.js', 'Ethereum', 'Hardhat', 'Truffle', 'Metamask', 'IPFS',
+                      'Jest', 'Cypress', 'Selenium', 'Postman', 'SonarQube', 'ESLint', 'Prettier',
+                      'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Confluence', 'Slack', 'Discord',
+                      'React Native', 'Flutter', 'Swift', 'Kotlin', 'Xamarin', 'Ionic', 'Cordova'
+                    ].concat([
+                      'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins', 'GitLab CI',
+                      'GitHub Actions', 'Terraform', 'Ansible', 'Nginx', 'Apache',
+                      'TensorFlow', 'PyTorch', 'Scikit-learn', 'Pandas', 'NumPy', 'OpenCV', 'Keras',
+                      'Jupyter', 'Apache Spark', 'Hadoop', 'Tableau', 'Power BI',
+                      'Solidity', 'Web3.js', 'Ethereum', 'Hardhat', 'Truffle', 'Metamask', 'IPFS',
+                      'Jest', 'Cypress', 'Selenium', 'Postman', 'SonarQube', 'ESLint', 'Prettier',
+                      'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Confluence', 'Slack', 'Discord',
+                      'React Native', 'Flutter', 'Swift', 'Kotlin', 'Xamarin', 'Ionic', 'Cordova'
+                    ]).map((tech, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg px-4 py-3 transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      >
+                        <span className="text-gray-200 font-medium text-sm">{tech}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Gradient overlays for smooth fade effect */}
+              <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none z-10"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none z-10"></div>
+            </div>
         {/* CTA Section */}
         <section className="text-center">
           <div className="glass rounded-2xl p-8 sm:p-12 border border-gray-600">
