@@ -328,20 +328,20 @@ img {
 /* Animated scrolling tech stack */
 @keyframes scroll {
   0% {
-    transform: translateX(0);
+    transform: translateY(0);
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateY(-100%);
   }
 }
 
 .animate-scroll {
-  animation: scroll 60s linear infinite;
+  animation: scroll 40s linear infinite;
 }
 
 .animate-scroll-duplicate {
-  animation: scroll 60s linear infinite;
-  animation-delay: -30s;
+  animation: scroll 40s linear infinite;
+  animation-delay: -20s;
 }
 
 /* Pause animation on hover */
