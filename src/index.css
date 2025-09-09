@@ -325,6 +325,31 @@ img {
   }
 }
 
+/* Animated scrolling tech stack */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 60s linear infinite;
+}
+
+.animate-scroll-duplicate {
+  animation: scroll 60s linear infinite;
+  animation-delay: -30s;
+}
+
+/* Pause animation on hover */
+.glass:hover .animate-scroll,
+.glass:hover .animate-scroll-duplicate {
+  animation-play-state: paused;
+}
+
 /* Search animations */
 @keyframes searchPulse {
   0%, 100% {
