@@ -267,13 +267,14 @@ export const ServicesPage: React.FC = () => {
                       </div>
                     ))}
                   </div>
-                </div>
-              </div>
               
               {/* Gradient overlays for smooth fade effect */}
               <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none z-10"></div>
               <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none z-10"></div>
             </div>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section className="text-center">
           <div className="glass rounded-2xl p-8 sm:p-12 border border-gray-600">

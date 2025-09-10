@@ -342,6 +342,7 @@ img {
 /* Pause animation on hover */
 .glass:hover .animate-scroll {
   animation-play-state: paused;
+}
 
 /* Search animations */
 @keyframes searchPulse {
