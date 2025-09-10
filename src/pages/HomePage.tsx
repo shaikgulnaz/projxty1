@@ -26,7 +26,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-32 overflow-hidden">
+    <section className="relative py-14 sm:py-20 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
