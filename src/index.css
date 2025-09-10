@@ -339,14 +339,8 @@ img {
   animation: scroll 40s linear infinite;
 }
 
-.animate-scroll-duplicate {
-  animation: scroll 40s linear infinite;
-  animation-delay: -20s;
-}
-
 /* Pause animation on hover */
-.glass:hover .animate-scroll,
-.glass:hover .animate-scroll-duplicate {
+.glass:hover .animate-scroll {
   animation-play-state: paused;
 }
 
