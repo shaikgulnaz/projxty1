@@ -26,25 +26,25 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-32 overflow-hidden">
+      <section className="relative py-32 sm:py-52 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
             {/* Left Half - Hero Content */}
-            <div className="text-center lg:text-left slide-in">
+            <div className="lg:col-span-3 text-center lg:text-left slide-in">
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 neon-glow leading-tight">
                 Code That Actually <span className="gradient-text-fire">Slaps</span> 🔥
               </h1>
-              <p className="text-xl sm:text-2xl text-gray-300 mb-8 leading-relaxed">
+              <p className="text-xl sm:text-2xl text-gray-300 mb-12 leading-relaxed">
                 No cap - these projects are straight fire! 🚀 From AI that hits different to web apps that go hard. 
                 Perfect inspo for your next assignment or side hustle 💯
               </p>
               
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
                 <button
                   onClick={onNavigateToProjects}
-                  className="group bg-white text-black px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-xl"
+                  className="group bg-white text-black px-10 py-5 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-xl"
                 >
                   Explore Projects
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
@@ -52,7 +52,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 
                 <button
                   onClick={onNavigateToProjects}
-                  className="group glass border border-gray-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3"
+                  className="group glass border border-gray-600 text-white px-10 py-5 rounded-xl font-semibold text-lg hover:bg-white/10 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3"
                 >
                   <TrendingUp className="w-5 h-5" />
                   View All {stats.total} Projects
@@ -61,7 +61,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
             
             {/* Right Half - Featured Projects Preview */}
-            <div className="hidden lg:block slide-in" style={{ animationDelay: '200ms' }}>
+            <div className="lg:col-span-2 hidden lg:block slide-in" style={{ animationDelay: '200ms' }}>
               {featuredProjects.length > 0 && (
                 <FeaturedSlideshow 
                   projects={featuredProjects}
@@ -74,39 +74,40 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* Stats Section */}
-      <section className="relative py-16 sm:py-20">
+      <section className="relative py-20 sm:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-20">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
               Project Statistics
             </h2>
-            <p className="text-xl text-gray-300">
+            <p className="text-xl text-gray-300 mb-8">
               Showcasing innovation across multiple domains
             </p>
+            <div className="w-32 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="glass rounded-2xl p-8 border border-gray-600 text-center hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+            <div className="glass rounded-2xl p-10 border border-gray-600 text-center hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105">
               <div className="bg-black border border-gray-600 p-4 rounded-xl w-fit mx-auto mb-4">
                 <TrendingUp className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-4xl font-bold text-white mb-2">{stats.total}</h3>
+              <h3 className="text-5xl font-bold text-white mb-3">{stats.total}</h3>
               <p className="text-gray-300">Total Projects</p>
             </div>
             
-            <div className="glass rounded-2xl p-8 border border-gray-600 text-center hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105">
+            <div className="glass rounded-2xl p-10 border border-gray-600 text-center hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105 md:scale-110">
               <div className="bg-black border border-gray-600 p-4 rounded-xl w-fit mx-auto mb-4">
                 <Star className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-4xl font-bold text-white mb-2">{stats.featured}</h3>
+              <h3 className="text-5xl font-bold text-white mb-3">{stats.featured}</h3>
               <p className="text-gray-300">Featured Projects</p>
             </div>
             
-            <div className="glass rounded-2xl p-8 border border-gray-600 text-center hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105">
+            <div className="glass rounded-2xl p-10 border border-gray-600 text-center hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105">
               <div className="bg-black border border-gray-600 p-4 rounded-xl w-fit mx-auto mb-4">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-4xl font-bold text-white mb-2">{stats.categories}</h3>
+              <h3 className="text-5xl font-bold text-white mb-3">{stats.categories}</h3>
               <p className="text-gray-300">Categories</p>
             </div>
           </div>
@@ -115,18 +116,19 @@ export const HomePage: React.FC<HomePageProps> = ({
 
       {/* Featured Projects Section */}
       {featuredProjects.length > 0 && (
-        <section className="relative py-16 sm:py-20">
+        <section className="relative py-20 sm:py-32">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-20">
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
                 Featured Projects
               </h2>
-              <p className="text-xl text-gray-300">
+              <p className="text-xl text-gray-300 mb-8">
                 Handpicked projects that showcase exceptional innovation
               </p>
+              <div className="w-32 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
               {featuredProjects.map((project, index) => (
                 <div
                   key={project.id}
@@ -142,13 +144,13 @@ export const HomePage: React.FC<HomePageProps> = ({
               ))}
             </div>
             
-            <div className="text-center mt-12">
+            <div className="text-center mt-20">
               <button
                 onClick={() => {
                   onNavigateToProjects();
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="group bg-black border border-gray-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-900 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 mx-auto"
+                className="group bg-black border border-gray-600 text-white px-10 py-5 rounded-xl font-semibold text-lg hover:bg-gray-900 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 mx-auto"
               >
                 View All Projects
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
@@ -169,10 +171,10 @@ const FeaturedProjectCard: React.FC<{
 }> = ({ project, onClick, onShare }) => {
   return (
     <div 
-      className="group glass rounded-xl overflow-hidden border border-gray-600 hover:border-gray-400 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-500/20"
+      className="group glass rounded-2xl overflow-hidden border border-gray-600 hover:border-gray-400 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-500/20"
       onClick={() => onClick(project)}
     >
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-56 overflow-hidden">
         <img
           src={project.image}
           alt={project.title}
@@ -191,34 +193,35 @@ const FeaturedProjectCard: React.FC<{
         
         {/* Play Button */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-          <div className="bg-black/80 hover:bg-black text-white p-4 rounded-full transition-all duration-300 transform hover:scale-110 backdrop-blur-sm border border-gray-600 shadow-2xl">
+          <div className="bg-black/80 hover:bg-black text-white p-5 rounded-full transition-all duration-300 transform hover:scale-110 backdrop-blur-sm border border-gray-600 shadow-2xl">
             <Play className="w-6 h-6 ml-1" fill="currentColor" />
           </div>
         </div>
       </div>
       
-      <div className="p-6">
+      <div className="p-8">
         <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gray-200 transition-colors duration-300">
           {project.title}
         </h3>
-        <p className="text-gray-300 mb-4 line-clamp-2 leading-relaxed">
+        <p className="text-gray-300 mb-6 line-clamp-2 leading-relaxed">
           {project.description}
         </p>
         
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3">
           {project.technologies.slice(0, 3).map((tech, index) => (
             <span
+              key={index}
               onClick={() => {
                 onNavigateToProjects();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="px-3 py-1 bg-gray-800 text-gray-200 rounded-full text-sm font-medium border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300"
+              className="px-4 py-2 bg-gray-800 text-gray-200 rounded-full text-sm font-medium border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300"
             >
               {tech}
             </span>
           ))}
           {project.technologies.length > 3 && (
-            <span className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-sm font-medium border border-gray-500">
+            <span className="px-4 py-2 bg-gray-700 text-gray-300 rounded-full text-sm font-medium border border-gray-500">
               +{project.technologies.length - 3}
             </span>
           )}
@@ -245,7 +248,7 @@ const FeaturedSlideshow: React.FC<{
         setCurrentIndex((prev) => (prev + 1) % projects.length);
         setIsTransitioning(false);
       }, 150);
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [projects.length]);
@@ -264,15 +267,15 @@ const FeaturedSlideshow: React.FC<{
   const currentProject = projects[currentIndex];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-3 mb-6">
+    <div className="space-y-8">
+      <div className="flex items-center space-x-3 mb-8">
         <Star className="w-6 h-6 text-gray-400" />
         <h3 className="text-2xl font-bold text-white">Featured Projects</h3>
       </div>
       
-      <div className="glass rounded-xl border border-gray-600 overflow-hidden transform transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-gray-500/20">
+      <div className="glass rounded-2xl border border-gray-600 overflow-hidden transform transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-gray-500/20">
         <div 
-          className={`relative h-64 cursor-pointer overflow-hidden transition-all duration-300 ${isTransitioning ? 'opacity-90 scale-95' : 'opacity-100 scale-100'}`}
+          className={`relative h-80 cursor-pointer overflow-hidden transition-all duration-300 ${isTransitioning ? 'opacity-90 scale-95' : 'opacity-100 scale-100'}`}
           onClick={() => onProjectClick(currentProject)}
         >
           <img
@@ -290,31 +293,31 @@ const FeaturedSlideshow: React.FC<{
           </div>
         </div>
         
-        <div className={`p-6 bg-gray-900/20 backdrop-blur-sm transition-all duration-300 ${isTransitioning ? 'opacity-80' : 'opacity-100'}`}>
+        <div className={`p-8 bg-gray-900/20 backdrop-blur-sm transition-all duration-300 ${isTransitioning ? 'opacity-80' : 'opacity-100'}`}>
           <h4 className="text-xl font-bold text-white mb-3 hover:text-gray-200 transition-colors duration-300">
             {currentProject.title}
           </h4>
-          <p className="text-gray-300 text-sm mb-4 line-clamp-2 leading-relaxed">
+          <p className="text-gray-300 text-sm mb-6 line-clamp-2 leading-relaxed">
             {currentProject.description}
           </p>
           
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-wrap gap-3 mb-6">
             {currentProject.technologies.slice(0, 3).map((tech, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-gray-800 text-gray-200 rounded-full text-xs font-medium border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300"
+                className="px-4 py-2 bg-gray-800 text-gray-200 rounded-full text-xs font-medium border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300"
               >
                 {tech}
               </span>
             ))}
             {currentProject.technologies.length > 3 && (
-              <span className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-xs font-medium border border-gray-500">
+              <span className="px-4 py-2 bg-gray-700 text-gray-300 rounded-full text-xs font-medium border border-gray-500">
                 +{currentProject.technologies.length - 3}
               </span>
             )}
           </div>
           
-          <div className="flex justify-center space-x-2">
+          <div className="flex justify-center space-x-3">
             {projects.map((_, index) => (
               <button
                 key={index}
@@ -322,10 +325,10 @@ const FeaturedSlideshow: React.FC<{
                   e.stopPropagation();
                   handleIndicatorClick(index);
                 }}
-                className={`w-2 h-2 rounded-full transition-all duration-500 hover:scale-125 ${
+                className={`w-3 h-3 rounded-full transition-all duration-500 hover:scale-125 ${
                   index === currentIndex 
-                    ? 'bg-white w-6 shadow-lg shadow-white/50' 
-                    : 'bg-gray-500 hover:bg-gray-400 hover:w-4'
+                    ? 'bg-white w-8 shadow-lg shadow-white/50' 
+                    : 'bg-gray-500 hover:bg-gray-400 hover:w-5'
                 }`}
               />
             ))}
