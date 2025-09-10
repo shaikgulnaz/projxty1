@@ -1,15 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { TrendingUp, Star, Sparkles, Play, ArrowRight } from 'lucide-react';
-
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  featured: boolean;
-  category: string;
-  technologies: string[];
-}
+import React, { useEffect, useState, useRef } from 'react';
+import { TrendingUp, Star, Sparkles, Play, ArrowRight, Share2 } from 'lucide-react';
+import { Project } from '../types';
 
 interface HomePageProps {
   projects: Project[];
@@ -24,133 +15,173 @@ export const HomePage: React.FC<HomePageProps> = ({
   onProjectClick,
   onShareProject,
 }) => {
-  const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
+  // entrance animation (simple, no external deps)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 40);
+    return () => clearTimeout(t);
+  }, []);
 
+  const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
   const stats = {
     total: projects.length,
-    featured: featuredProjects.length,
+    featured: projects.filter((p) => p.featured).length,
     categories: new Set(projects.map((p) => p.category)).size,
   };
 
   return (
-    <div className="relative">
-      {/* Hero Section */}
-      <section
-        className="relative overflow-hidden mx-auto"
-        style={{ maxWidth: 1340, height: 690, paddingTop: 20, paddingBottom: 20 }}
-      >
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative h-full px-6 sm:px-10 lg:px-16 grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-12 items-center">
-          {/* Left Half - Hero Content */}
-          <div
-            className="lg:col-span-3 text-center lg:text-left slide-in flex flex-col justify-start"
-            style={{ minHeight: '100%' }}
-          >
-            <div className="mt-auto mb-auto">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 neon-glow leading-tight tracking-wide">
+    <div className="bg-gray-900 text-white min-h-screen font-sans">
+      {/* inject small utility styles (neon + gradient + scrollbar hide) */}
+      <style>{`
+        .neon-glow { text-shadow: 0 2px 14px rgba(99,102,241,0.06), 0 6px 40px rgba(59,130,246,0.04); }
+        .gradient-text-fire { background: linear-gradient(90deg,#ff7a18,#af002d 50%,#5f00d0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .no-scrollbar::-webkit-scrollbar{ display:none } .no-scrollbar{-ms-overflow-style:none; scrollbar-width:none }
+      `}</style>
+
+      <div className="container mx-auto px-4 pt-16 pb-32 min-h-[120vh]">
+        {/* HERO */}
+        <section className="relative overflow-hidden">
+          <div className={`grid grid-cols-1 lg:grid-cols-5 gap-10 items-center`}> 
+            {/* left - content */}
+            <div
+              className={`lg:col-span-3 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'} transition-all duration-700`}
+            >
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight neon-glow">
                 Code That Actually <span className="gradient-text-fire">Slaps</span>
+                <span className="ml-2">🔥</span>
               </h1>
-              <p className="text-xl sm:text-2xl text-gray-300 mb-10 leading-relaxed max-w-3xl mx-auto lg:mx-0">
-                No cap - these projects are straight fire! From advanced artificial intelligence that hits different to dynamic web applications that go hard.
-                Perfect inspiration for your next coding challenge or personal project. Go big or go home.
+
+              <p className="mt-4 text-base sm:text-lg text-gray-300 max-w-2xl">
+                Practical projects, clean code, and modern UI patterns — ready to study, fork or use as a base for your next assignment or side-hustle.
               </p>
 
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
+              <div className="mt-6 flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <button
                   onClick={onNavigateToProjects}
-                  className="group bg-white text-black px-10 py-4 rounded-2xl font-extrabold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-2xl"
+                  className="inline-flex items-center gap-3 bg-white text-black px-6 sm:px-8 py-3 rounded-lg font-semibold shadow-md hover:scale-103 transform transition"
                 >
                   Explore Projects
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <button
                   onClick={onNavigateToProjects}
-                  className="group glass border border-gray-600 text-white px-10 py-4 rounded-2xl font-semibold text-lg hover:bg-white/10 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3"
+                  className="inline-flex items-center gap-3 border border-gray-600 px-6 sm:px-8 py-3 rounded-lg text-gray-200 hover:bg-white/5 transition"
                 >
-                  <TrendingUp className="w-5 h-5" />
-                  View All {stats.total} Projects
+                  <TrendingUp className="w-4 h-4" />
+                  View All {stats.total}
                 </button>
+              </div>
+
+              {/* lightweight stats strip for mobile under hero */}
+              <div className="mt-8 grid grid-cols-3 gap-3 sm:hidden">
+                <StatPill icon={<TrendingUp />} value={stats.total} label="All" />
+                <StatPill icon={<Star />} value={stats.featured} label="Featured" />
+                <StatPill icon={<Sparkles />} value={stats.categories} label="Cats" />
+              </div>
+            </div>
+
+            {/* right - preview (desktop) */}
+            <div className="lg:col-span-2 hidden lg:block">
+              <div className={`${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'} transition-all duration-700`}> 
+                {featuredProjects.length > 0 ? (
+                  <FeaturedSlideshow projects={featuredProjects} onProjectClick={onProjectClick} />
+                ) : (
+                  <div className="bg-gray-800 rounded-lg h-56 flex items-center justify-center text-gray-400">No featured projects yet</div>
+                )}
+              </div>
+            </div>
+
+            {/* right - mobile carousel (below content on small screens) */}
+            <div className="col-span-1 lg:hidden mt-6">
+              <div className="flex gap-4 overflow-x-auto no-scrollbar snap-x py-2">
+                {featuredProjects.map((p) => (
+                  <div key={p.id} className="min-w-[78%] snap-center">
+                    <FeaturedProjectCard
+                      project={p}
+                      onClick={onProjectClick}
+                      onShare={onShareProject}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Right Half - Featured Projects Preview */}
-          <div
-            className="lg:col-span-2 hidden lg:block slide-in"
-            style={{ animationDelay: '200ms', height: '100%' }}
-          >
-            {featuredProjects.length > 0 && (
-              <FeaturedSlideshow projects={featuredProjects} onProjectClick={onProjectClick} />
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="relative py-20 sm:py-28">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="text-center mb-20">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-6 tracking-wide">Project Statistics</h2>
-            <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">Showcasing innovation across multiple domains</p>
-            <div className="w-40 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
-            <StatCard icon={<TrendingUp className="w-10 h-10 text-white" />} number={stats.total} label="Total Projects" />
-            <StatCard icon={<Star className="w-10 h-10 text-white" />} number={stats.featured} label="Featured Projects" />
-            <StatCard icon={<Sparkles className="w-10 h-10 text-white" />} number={stats.categories} label="Categories" />
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Projects Section */}
-      {featuredProjects.length > 0 && (
-        <section className="relative py-20 sm:py-28">
-          <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-            <div className="text-center mb-20">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-6 tracking-wide">Featured Projects</h2>
-              <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">Handpicked projects that showcase exceptional innovation</p>
-              <div className="w-40 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12 max-w-[1340px] mx-auto">
-              {featuredProjects.map((project, index) => (
-                <div
-                  key={project.id}
-                  className="slide-in"
-                  style={{ animationDelay: `${index * 120}ms`, aspectRatio: '4 / 3' }}
-                >
-                  <FeaturedProjectCard project={project} onClick={onProjectClick} onShare={onShareProject} />
-                </div>
-              ))}
-            </div>
-
-            <div className="text-center mt-20">
-              <button
-                onClick={() => {
-                  onNavigateToProjects();
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="group bg-black border border-gray-600 text-white px-14 py-6 rounded-2xl font-semibold text-xl hover:bg-gray-900 transition-all duration-300 transform hover:scale-110 flex items-center justify-center gap-4 mx-auto"
-              >
-                View All Projects
-                <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
-              </button>
+        {/* STATS (desktop) */}
+        <section className="mt-14 hidden sm:block">
+          <div className="bg-gradient-to-r from-transparent via-gray-800 to-transparent rounded-lg p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <StatCard icon={<TrendingUp />} value={stats.total} label="Total Projects" />
+              <StatCard icon={<Star />} value={stats.featured} label="Featured" />
+              <StatCard icon={<Sparkles />} value={stats.categories} label="Categories" />
             </div>
           </div>
         </section>
-      )}
+
+        {/* FEATURED GRID */}
+        {featuredProjects.length > 0 && (
+          <section className="mt-16">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold">Featured Projects</h2>
+                <p className="text-gray-300 text-sm mt-1">Handpicked projects with clear value and readable code.</p>
+              </div>
+              <div className="hidden sm:block">
+                <button
+                  onClick={() => { onNavigateToProjects(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-gray-600 rounded-md hover:bg-white/5 transition"
+                >
+                  View All
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredProjects.map((project) => (
+                <FeaturedProjectCard
+                  key={project.id}
+                  project={project}
+                  onClick={onProjectClick}
+                  onShare={onShareProject}
+                />
+              ))}
+            </div>
+
+            {/* mobile CTA */}
+            <div className="mt-8 text-center sm:hidden">
+              <button
+                onClick={() => { onNavigateToProjects(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                className="px-6 py-3 bg-white text-black rounded-md font-semibold shadow-sm"
+              >
+                View All Projects
+              </button>
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 };
 
-const StatCard: React.FC<{ icon: React.ReactNode; number: number; label: string }> = ({ icon, number, label }) => (
-  <div className="glass rounded-3xl p-12 border border-gray-600 text-center hover:shadow-2xl hover:shadow-gray-500/30 transition-all duration-400 transform hover:scale-105">
-    <div className="bg-black border border-gray-600 p-5 rounded-2xl w-fit mx-auto mb-5">{icon}</div>
-    <h3 className="text-5xl font-extrabold text-white mb-3">{number}</h3>
-    <p className="text-gray-300 text-lg">{label}</p>
+/* ----------------- Small subcomponents ----------------- */
+const StatCard: React.FC<{ icon: React.ReactNode; value: number; label: string }> = ({ icon, value, label }) => (
+  <div className="bg-gray-800 rounded-xl p-6 flex flex-col items-center text-center">
+    <div className="bg-black/40 p-3 rounded-md mb-3 inline-flex">{icon}</div>
+    <div className="text-2xl font-bold">{value}</div>
+    <div className="text-gray-300 text-sm mt-1">{label}</div>
+  </div>
+);
+
+const StatPill: React.FC<{ icon: React.ReactNode; value: number; label: string }> = ({ icon, value, label }) => (
+  <div className="bg-gray-800 rounded-lg px-3 py-2 flex items-center gap-3">
+    <div className="p-2 bg-black/30 rounded-md">{icon}</div>
+    <div>
+      <div className="font-semibold">{value}</div>
+      <div className="text-xs text-gray-300">{label}</div>
+    </div>
   </div>
 );
 
@@ -161,64 +192,43 @@ const FeaturedProjectCard: React.FC<{
 }> = ({ project, onClick, onShare }) => {
   return (
     <div
-      className="group glass rounded-3xl overflow-hidden border border-gray-600 hover:border-gray-400 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-3xl hover:shadow-gray-600/30 flex flex-col h-full"
+      role="button"
+      tabIndex={0}
       onClick={() => onClick(project)}
-      style={{ aspectRatio: '4 / 3' }}
+      onKeyDown={(e) => { if (e.key === 'Enter') onClick(project); }}
+      className="group bg-gray-800 rounded-2xl overflow-hidden border border-gray-700 hover:border-gray-500 cursor-pointer transition-transform transform hover:-translate-y-1"
     >
-      {/* Image section 40% height */}
-      <div className="relative flex-shrink-0" style={{ height: '40%' }}>
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-        {/* Featured Badge */}
-        {project.featured && (
-          <div className="absolute top-4 right-4 bg-black border border-gray-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 shadow-xl">
-            <Sparkles className="w-4 h-4" />
-            Featured
-          </div>
-        )}
-
-        {/* Play Button */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-          <div className="bg-black/90 hover:bg-black text-white p-6 rounded-full transition-all duration-300 transform hover:scale-110 backdrop-blur-md border border-gray-600 shadow-3xl">
-            <Play className="w-7 h-7 ml-1" fill="currentColor" />
+      <div className="relative h-48">
+        <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+        <div className="absolute top-3 right-3 bg-black/60 px-2 py-1 rounded-full text-xs flex items-center gap-2">
+          <Sparkles className="w-4 h-4" />
+          <span>Featured</span>
+        </div>
+        <div className="absolute left-3 top-3 flex gap-2">
+          <button
+            onClick={(e) => { e.stopPropagation(); onShare(project); }}
+            className="bg-black/50 p-2 rounded-md hover:bg-black/60 transition"
+            aria-label={`Share ${project.title}`}
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+          <div className="bg-black/70 p-3 rounded-full">
+            <Play className="w-5 h-5" />
           </div>
         </div>
       </div>
 
-      {/* Text/details section 60% height */}
-      <div className="p-6 flex flex-col justify-between flex-grow" style={{ height: '60%' }}>
-        <div>
-          <h3 className="text-2xl font-extrabold text-white mb-3 group-hover:text-gray-200 transition-colors duration-300">
-            {project.title}
-          </h3>
-          <p className="text-gray-300 mb-6 line-clamp-3 leading-relaxed text-base">{project.description}</p>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          {project.technologies.slice(0, 3).map((tech, index) => (
-            <span
-              key={index}
-              onClick={(e) => {
-                e.stopPropagation();
-                onShare(project);
-              }}
-              className="px-4 py-2 bg-gray-800 text-gray-200 rounded-full text-sm font-semibold border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300 cursor-pointer select-none"
-            >
-              {tech}
-            </span>
+      <div className="p-4">
+        <h3 className="text-lg font-semibold mb-1">{project.title}</h3>
+        <p className="text-sm text-gray-300 mb-3 line-clamp-2">{project.description}</p>
+        <div className="flex flex-wrap gap-2">
+          {project.technologies.slice(0, 4).map((t, i) => (
+            <span key={i} className="text-xs bg-gray-700 px-2 py-1 rounded-full">{t}</span>
           ))}
-          {project.technologies.length > 3 && (
-            <span className="px-4 py-2 bg-gray-700 text-gray-300 rounded-full text-sm font-semibold border border-gray-500 select-none">
-              +{project.technologies.length - 3}
-            </span>
+          {project.technologies.length > 4 && (
+            <span className="text-xs bg-gray-700 px-2 py-1 rounded-full">+{project.technologies.length - 4}</span>
           )}
         </div>
       </div>
@@ -226,118 +236,41 @@ const FeaturedProjectCard: React.FC<{
   );
 };
 
-const FeaturedSlideshow: React.FC<{
-  projects: Project[];
-  onProjectClick: (project: Project) => void;
-}> = ({ projects, onProjectClick }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+const FeaturedSlideshow: React.FC<{ projects: Project[]; onProjectClick: (p: Project) => void }> = ({ projects, onProjectClick }) => {
+  const [index, setIndex] = useState(0);
+  const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (projects.length === 0) return;
-
-    const interval = setInterval(() => {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % projects.length);
-        setIsTransitioning(false);
-      }, 150);
-    }, 5000);
-
-    return () => clearInterval(interval);
+    // auto advance
+    intervalRef.current = window.setInterval(() => {
+      setIndex((i) => (i + 1) % projects.length);
+    }, 4500);
+    return () => { if (intervalRef.current) window.clearInterval(intervalRef.current); };
   }, [projects.length]);
 
-  const handleIndicatorClick = (index: number) => {
-    if (index === currentIndex) return;
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentIndex(index);
-      setIsTransitioning(false);
-    }, 150);
-  };
-
-  if (projects.length === 0) return null;
-
-  const currentProject = projects[currentIndex];
+  const project = projects[index];
 
   return (
-    <div className="space-y-10 h-full flex flex-col">
-      <div className="flex items-center space-x-4 mb-10">
-        <Star className="w-7 h-7 text-gray-400" />
-        <h3 className="text-3xl font-extrabold text-white tracking-wide">Featured Projects</h3>
+    <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+      <div className="relative h-56 cursor-pointer" onClick={() => onProjectClick(project)}>
+        <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+        <div className="absolute bottom-3 left-3 bg-black/60 px-3 py-1 rounded-md text-sm">{project.title}</div>
       </div>
-
-      <div className="glass rounded-3xl border border-gray-600 overflow-hidden transform transition-all duration-500 hover:scale-[1.04] hover:shadow-3xl hover:shadow-gray-600/30 flex-grow flex flex-col">
-        <div
-          className={`relative cursor-pointer overflow-hidden transition-all duration-300 flex-shrink-0`}
-          style={{ height: '40%' }}
-          onClick={() => onProjectClick(currentProject)}
-        >
-          <img
-            src={currentProject.image}
-            alt={currentProject.title}
-            className={`w-full h-full object-cover hover:scale-110 transition-transform duration-300 ${
-              isTransitioning ? 'opacity-90 scale-95' : 'opacity-100 scale-100'
-            }`}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-          />
-
-          <div className="absolute top-4 right-4 bg-black/90 backdrop-blur-md border border-gray-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 shadow-xl">
-            <Sparkles className="w-4 h-4 text-white" />
-            Featured
-          </div>
+      <div className="p-3 flex items-center justify-between">
+        <div className="flex gap-2 items-center">
+          {projects.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIndex(i)}
+              className={`w-2 h-2 rounded-full ${i === index ? 'bg-white' : 'bg-gray-500'} transition`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
         </div>
-
-        <div
-          className={`p-8 bg-gray-900/25 backdrop-blur-md transition-all duration-300 flex-grow flex flex-col justify-between ${
-            isTransitioning ? 'opacity-80' : 'opacity-100'
-          }`}
-          style={{ height: '60%' }}
-        >
-          <div>
-            <h4 className="text-2xl font-extrabold text-white mb-4 hover:text-gray-200 transition-colors duration-300 tracking-wide">
-              {currentProject.title}
-            </h4>
-            <p className="text-gray-300 text-lg mb-8 line-clamp-3 leading-relaxed">{currentProject.description}</p>
-          </div>
-
-          <div className="flex flex-wrap gap-4 mb-6">
-            {currentProject.technologies.slice(0, 3).map((tech, index) => (
-              <span
-                key={index}
-                className="px-5 py-3 bg-gray-800 text-gray-200 rounded-full text-base font-semibold border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300 select-none"
-              >
-                {tech}
-              </span>
-            ))}
-            {currentProject.technologies.length > 3 && (
-              <span className="px-5 py-3 bg-gray-700 text-gray-300 rounded-full text-base font-semibold border border-gray-500 select-none">
-                +{currentProject.technologies.length - 3}
-              </span>
-            )}
-          </div>
-
-          <div className="flex justify-center space-x-4">
-            {projects.map((_, index) => (
-              <button
-                key={index}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleIndicatorClick(index);
-                }}
-                className={`w-4 h-4 rounded-full transition-all duration-500 hover:scale-125 ${
-                  index === currentIndex
-                    ? 'bg-white w-10 shadow-xl shadow-white/60'
-                    : 'bg-gray-500 hover:bg-gray-400 hover:w-6'
-                }`}
-                aria-label={`Go to featured project ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
+        <div className="text-sm text-gray-300">{index + 1}/{projects.length}</div>
       </div>
     </div>
   );
 };
+
+export default HomePage;
