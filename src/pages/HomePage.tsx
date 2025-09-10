@@ -35,49 +35,55 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-36 overflow-hidden">
+      <section
+        className="relative overflow-hidden mx-auto"
+        style={{ maxWidth: 1340, height: 690, paddingTop: 20, paddingBottom: 20 }}
+      >
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-12 items-center">
-            {/* Left Half - Hero Content */}
-            <div className="lg:col-span-3 text-center lg:text-left slide-in flex flex-col justify-start" style={{ minHeight: '480px' }}>
-              {/* Using flex and minHeight to push text somewhat above middle */}
-              <div className="mt-auto mb-auto">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 neon-glow leading-tight tracking-wide">
-                  Code That Actually <span className="gradient-text-fire">Slaps</span>
-                </h1>
-                <p className="text-xl sm:text-2xl text-gray-300 mb-10 leading-relaxed max-w-3xl mx-auto lg:mx-0">
-                  No cap - these projects are straight fire! From advanced artificial intelligence that hits different to dynamic web applications that go hard.
-                  Perfect inspiration for your next coding challenge or personal project. Go big or go home.
-                </p>
+        <div className="relative h-full px-6 sm:px-10 lg:px-16 grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-12 items-center">
+          {/* Left Half - Hero Content */}
+          <div
+            className="lg:col-span-3 text-center lg:text-left slide-in flex flex-col justify-start"
+            style={{ minHeight: '100%' }}
+          >
+            <div className="mt-auto mb-auto">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 neon-glow leading-tight tracking-wide">
+                Code That Actually <span className="gradient-text-fire">Slaps</span>
+              </h1>
+              <p className="text-xl sm:text-2xl text-gray-300 mb-10 leading-relaxed max-w-3xl mx-auto lg:mx-0">
+                No cap - these projects are straight fire! From advanced artificial intelligence that hits different to dynamic web applications that go hard.
+                Perfect inspiration for your next coding challenge or personal project. Go big or go home.
+              </p>
 
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
-                  <button
-                    onClick={onNavigateToProjects}
-                    className="group bg-white text-black px-10 py-4 rounded-2xl font-extrabold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-2xl"
-                  >
-                    Explore Projects
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </button>
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
+                <button
+                  onClick={onNavigateToProjects}
+                  className="group bg-white text-black px-10 py-4 rounded-2xl font-extrabold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-2xl"
+                >
+                  Explore Projects
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </button>
 
-                  <button
-                    onClick={onNavigateToProjects}
-                    className="group glass border border-gray-600 text-white px-10 py-4 rounded-2xl font-semibold text-lg hover:bg-white/10 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3"
-                  >
-                    <TrendingUp className="w-5 h-5" />
-                    View All {stats.total} Projects
-                  </button>
-                </div>
+                <button
+                  onClick={onNavigateToProjects}
+                  className="group glass border border-gray-600 text-white px-10 py-4 rounded-2xl font-semibold text-lg hover:bg-white/10 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3"
+                >
+                  <TrendingUp className="w-5 h-5" />
+                  View All {stats.total} Projects
+                </button>
               </div>
             </div>
+          </div>
 
-            {/* Right Half - Featured Projects Preview */}
-            <div className="lg:col-span-2 hidden lg:block slide-in" style={{ animationDelay: '200ms' }}>
-              {featuredProjects.length > 0 && (
-                <FeaturedSlideshow projects={featuredProjects} onProjectClick={onProjectClick} />
-              )}
-            </div>
+          {/* Right Half - Featured Projects Preview */}
+          <div
+            className="lg:col-span-2 hidden lg:block slide-in"
+            style={{ animationDelay: '200ms', height: '100%' }}
+          >
+            {featuredProjects.length > 0 && (
+              <FeaturedSlideshow projects={featuredProjects} onProjectClick={onProjectClick} />
+            )}
           </div>
         </div>
       </section>
@@ -109,9 +115,13 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="w-40 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12 max-w-[1340px] mx-auto">
               {featuredProjects.map((project, index) => (
-                <div key={project.id} className="slide-in" style={{ animationDelay: `${index * 120}ms` }}>
+                <div
+                  key={project.id}
+                  className="slide-in"
+                  style={{ animationDelay: `${index * 120}ms`, aspectRatio: '4 / 3' }}
+                >
                   <FeaturedProjectCard project={project} onClick={onProjectClick} onShare={onShareProject} />
                 </div>
               ))}
@@ -151,10 +161,12 @@ const FeaturedProjectCard: React.FC<{
 }> = ({ project, onClick, onShare }) => {
   return (
     <div
-      className="group glass rounded-3xl overflow-hidden border border-gray-600 hover:border-gray-400 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-3xl hover:shadow-gray-600/30"
+      className="group glass rounded-3xl overflow-hidden border border-gray-600 hover:border-gray-400 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-3xl hover:shadow-gray-600/30 flex flex-col h-full"
       onClick={() => onClick(project)}
+      style={{ aspectRatio: '4 / 3' }}
     >
-      <div className="relative h-64 sm:h-72 md:h-80 overflow-hidden">
+      {/* Image section 40% height */}
+      <div className="relative flex-shrink-0" style={{ height: '40%' }}>
         <img
           src={project.image}
           alt={project.title}
@@ -181,13 +193,16 @@ const FeaturedProjectCard: React.FC<{
         </div>
       </div>
 
-      <div className="p-10">
-        <h3 className="text-2xl font-extrabold text-white mb-4 group-hover:text-gray-200 transition-colors duration-300">
-          {project.title}
-        </h3>
-        <p className="text-gray-300 mb-8 line-clamp-2 leading-relaxed text-lg">{project.description}</p>
+      {/* Text/details section 60% height */}
+      <div className="p-6 flex flex-col justify-between flex-grow" style={{ height: '60%' }}>
+        <div>
+          <h3 className="text-2xl font-extrabold text-white mb-3 group-hover:text-gray-200 transition-colors duration-300">
+            {project.title}
+          </h3>
+          <p className="text-gray-300 mb-6 line-clamp-3 leading-relaxed text-base">{project.description}</p>
+        </div>
 
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-3">
           {project.technologies.slice(0, 3).map((tech, index) => (
             <span
               key={index}
@@ -195,13 +210,13 @@ const FeaturedProjectCard: React.FC<{
                 e.stopPropagation();
                 onShare(project);
               }}
-              className="px-5 py-3 bg-gray-800 text-gray-200 rounded-full text-base font-semibold border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300 cursor-pointer select-none"
+              className="px-4 py-2 bg-gray-800 text-gray-200 rounded-full text-sm font-semibold border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300 cursor-pointer select-none"
             >
               {tech}
             </span>
           ))}
           {project.technologies.length > 3 && (
-            <span className="px-5 py-3 bg-gray-700 text-gray-300 rounded-full text-base font-semibold border border-gray-500 select-none">
+            <span className="px-4 py-2 bg-gray-700 text-gray-300 rounded-full text-sm font-semibold border border-gray-500 select-none">
               +{project.technologies.length - 3}
             </span>
           )}
@@ -246,23 +261,24 @@ const FeaturedSlideshow: React.FC<{
   const currentProject = projects[currentIndex];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 h-full flex flex-col">
       <div className="flex items-center space-x-4 mb-10">
         <Star className="w-7 h-7 text-gray-400" />
         <h3 className="text-3xl font-extrabold text-white tracking-wide">Featured Projects</h3>
       </div>
 
-      <div className="glass rounded-3xl border border-gray-600 overflow-hidden transform transition-all duration-500 hover:scale-[1.04] hover:shadow-3xl hover:shadow-gray-600/30">
+      <div className="glass rounded-3xl border border-gray-600 overflow-hidden transform transition-all duration-500 hover:scale-[1.04] hover:shadow-3xl hover:shadow-gray-600/30 flex-grow flex flex-col">
         <div
-          className={`relative h-96 cursor-pointer overflow-hidden transition-all duration-300 ${
-            isTransitioning ? 'opacity-90 scale-95' : 'opacity-100 scale-100'
-          }`}
+          className={`relative cursor-pointer overflow-hidden transition-all duration-300 flex-shrink-0`}
+          style={{ height: '40%' }}
           onClick={() => onProjectClick(currentProject)}
         >
           <img
             src={currentProject.image}
             alt={currentProject.title}
-            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+            className={`w-full h-full object-cover hover:scale-110 transition-transform duration-300 ${
+              isTransitioning ? 'opacity-90 scale-95' : 'opacity-100 scale-100'
+            }`}
             loading="eager"
             decoding="async"
             fetchPriority="high"
@@ -275,16 +291,19 @@ const FeaturedSlideshow: React.FC<{
         </div>
 
         <div
-          className={`p-10 bg-gray-900/25 backdrop-blur-md transition-all duration-300 ${
+          className={`p-8 bg-gray-900/25 backdrop-blur-md transition-all duration-300 flex-grow flex flex-col justify-between ${
             isTransitioning ? 'opacity-80' : 'opacity-100'
           }`}
+          style={{ height: '60%' }}
         >
-          <h4 className="text-2xl font-extrabold text-white mb-4 hover:text-gray-200 transition-colors duration-300 tracking-wide">
-            {currentProject.title}
-          </h4>
-          <p className="text-gray-300 text-lg mb-8 line-clamp-2 leading-relaxed">{currentProject.description}</p>
+          <div>
+            <h4 className="text-2xl font-extrabold text-white mb-4 hover:text-gray-200 transition-colors duration-300 tracking-wide">
+              {currentProject.title}
+            </h4>
+            <p className="text-gray-300 text-lg mb-8 line-clamp-3 leading-relaxed">{currentProject.description}</p>
+          </div>
 
-          <div className="flex flex-wrap gap-4 mb-8">
+          <div className="flex flex-wrap gap-4 mb-6">
             {currentProject.technologies.slice(0, 3).map((tech, index) => (
               <span
                 key={index}
