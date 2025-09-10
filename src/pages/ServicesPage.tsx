@@ -233,8 +233,6 @@ export const ServicesPage: React.FC = () => {
                     ))}
                   </div>
                 </div>
-          </div>
-        </section>
 
                 {/* Column 3 - Cloud, AI/ML & DevOps */}
                 <div className="space-y-4 overflow-hidden">
@@ -267,13 +265,14 @@ export const ServicesPage: React.FC = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
               
               {/* Gradient overlays for smooth fade effect */}
               <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none z-10"></div>
               <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none z-10"></div>
             </div>
           </div>
-        </section>
 
         {/* CTA Section */}
         <section className="text-center">
