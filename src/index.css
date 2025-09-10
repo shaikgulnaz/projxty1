@@ -394,3 +394,18 @@ img {
     background-position: 200% 0;
   }
 }
+/* WhatsApp Button Text Animation */
+@keyframes pingText {
+  0%, 20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  30%, 100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+.animate-pingText {
+  animation: pingText 6s infinite;
+}
