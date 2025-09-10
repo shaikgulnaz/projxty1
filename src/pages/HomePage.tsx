@@ -38,7 +38,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         .no-scrollbar::-webkit-scrollbar{ display:none } .no-scrollbar{-ms-overflow-style:none; scrollbar-width:none }
       `}</style>
 
-      <div className="container mx-auto px-4 pt-8 pb-20">
+      <div className="container mx-auto px-4 pt-16 pb-32 min-h-[120vh]">
         {/* HERO */}
         <section className="relative overflow-hidden">
           <div className={`grid grid-cols-1 lg:grid-cols-5 gap-10 items-center`}> 
