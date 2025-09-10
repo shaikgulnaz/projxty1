@@ -247,7 +247,7 @@ function App() {
           
           <div className="space-y-3">
             <h2 className="text-2xl sm:text-3xl font-bold text-white neon-glow fade-in-up">
-              projx
+              projxty
             </h2>
             <p className="text-base sm:text-lg text-white/80 fade-in-up" style={{ animationDelay: '0.3s' }}>
               Loading amazing projects...
