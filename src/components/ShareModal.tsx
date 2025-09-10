@@ -89,6 +89,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({ project, isOpen, onClose
                 src={project.image}
                 alt={project.title}
                 className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                loading="eager"
+                decoding="async"
               />
               <div className="flex-1 min-w-0">
                 <h3 className="text-white font-semibold text-sm truncate">{project.title}</h3>
