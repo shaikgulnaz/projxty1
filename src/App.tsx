@@ -472,17 +472,26 @@ function App() {
       </main>
 
       {/* WhatsApp Contact Button */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <a
-          href="https://wa.me/916361064550?text=Hi! I'm interested in your projects and would like to connect."
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center justify-center w-14 h-14 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 touch-manipulation"
-          title="Contact on WhatsApp"
-        >
-          <MessageCircle className="w-6 h-6" />
-        </a>
-      </div>
+<div className="fixed bottom-4 right-4 z-50 flex flex-col items-center space-y-2">
+  {/* Animated Text */}
+  <div className="relative h-6 overflow-hidden">
+    <span className="absolute animate-pingText text-white text-sm font-medium">Ping me</span>
+    <span className="absolute animate-pingText text-white text-sm font-medium" style={{ animationDelay: '2s' }}>DM me</span>
+    <span className="absolute animate-pingText text-white text-sm font-medium" style={{ animationDelay: '4s' }}>Message me</span>
+  </div>
+
+  {/* WhatsApp Button */}
+  <a
+    href="https://wa.me/916361064550?text=Hi! I'm interested in your projects and would like to connect."
+    target="_blank"
+    rel="noopener noreferrer"
+    className="group flex items-center justify-center w-14 h-14 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 touch-manipulation"
+    title="Contact on WhatsApp"
+  >
+    <MessageCircle className="w-6 h-6" />
+  </a>
+</div>
+
 
       {/* Auth Modal */}
       {showAuth && (
