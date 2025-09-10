@@ -148,10 +148,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                   <img
                     src={project.image}
                     alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    loading="eager"
-                    decoding="async"
-                    fetchPriority="high"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   

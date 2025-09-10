@@ -285,33 +285,6 @@
   will-change: transform;
 }
 
-/* Smooth scrolling for all elements */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Better focus states for accessibility */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 2px;
-}
-
-/* Image loading optimizations */
-img {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-/* Preload critical images */
-.hero-image,
-.featured-image {
-  content-visibility: auto;
-  contain-intrinsic-size: 400px 300px;
-}
-
 /* Reduce animations on low-end devices */
 @media (max-width: 640px) and (max-resolution: 150dpi) {
   .floating-element,
@@ -323,25 +296,6 @@ img {
     background: #1a1a1a;
     animation: none;
   }
-}
-
-/* Animated scrolling tech stack */
-@keyframes scroll {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-100%);
-  }
-}
-
-.animate-scroll {
-  animation: scroll 40s linear infinite;
-}
-
-/* Pause animation on hover */
-.glass:hover .animate-scroll {
-  animation-play-state: paused;
 }
 
 /* Search animations */
