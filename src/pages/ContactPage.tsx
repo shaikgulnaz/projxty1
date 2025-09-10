@@ -1,12 +1,3 @@
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FGE095VZMR"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FGE095VZMR');
-</script>
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, MessageCircle, Send, Clock, Globe, Award, CheckCircle } from 'lucide-react';
 
