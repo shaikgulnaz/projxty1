@@ -1,12 +1,3 @@
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FGE095VZMR"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FGE095VZMR');
-</script>
 import React from 'react';
 import { Code2, Users, Target, Award, Lightbulb, Rocket, Heart, Star } from 'lucide-react';
 
@@ -208,3 +199,12 @@ export const AboutPage: React.FC = () => {
     </div>
   );
 };
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FGE095VZMR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FGE095VZMR');
+</script>
