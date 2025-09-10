@@ -182,100 +182,29 @@ export const ServicesPage: React.FC = () => {
             <p className="text-xl text-gray-300">Cutting-edge tools and frameworks for modern solutions</p>
           </div>
           
-          <div className="glass rounded-2xl p-6 sm:p-8 border border-gray-600 overflow-hidden">
-            <div className="relative overflow-hidden">
-              {/* 3-Column Responsive Grid with Synchronized Scrolling */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-96 overflow-hidden">
-                {/* Column 1 - Frontend & UI */}
-                <div className="space-y-4 overflow-hidden">
-                  <h4 className="text-lg font-semibold text-white mb-4 text-center">Frontend & UI</h4>
-                  <div className="animate-scroll space-y-3">
-                    {[
-                      'React', 'Vue.js', 'Angular', 'Next.js', 'Nuxt.js', 'Svelte', 'TypeScript', 'JavaScript',
-                      'HTML5', 'CSS3', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material-UI', 'Chakra UI',
-                      'Figma', 'Adobe XD', 'Sketch', 'InVision', 'Canva', 'Photoshop', 'Illustrator'
-                    ].concat([
-                      'React', 'Vue.js', 'Angular', 'Next.js', 'Nuxt.js', 'Svelte', 'TypeScript', 'JavaScript',
-                      'HTML5', 'CSS3', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material-UI', 'Chakra UI',
-                      'Figma', 'Adobe XD', 'Sketch', 'InVision', 'Canva', 'Photoshop', 'Illustrator'
-                    ]).map((tech, index) => (
-                      <div
-                        key={index}
-                        className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg px-4 py-3 transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                      >
-                        <span className="text-gray-200 font-medium text-sm">{tech}</span>
-                      </div>
-                    ))}
-                  </div>
+          <div className="glass rounded-2xl p-6 sm:p-8 border border-gray-600">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {[
+                'React', 'Vue.js', 'Angular', 'Next.js', 'TypeScript', 'JavaScript',
+                'Node.js', 'Python', 'Django', 'FastAPI', 'Java', 'Spring Boot',
+                'MongoDB', 'PostgreSQL', 'MySQL', 'Redis', 'Firebase', 'Supabase',
+                'AWS', 'Azure', 'Docker', 'Kubernetes', 'TensorFlow', 'PyTorch',
+                'React Native', 'Flutter', 'Swift', 'Kotlin', 'Figma', 'Tailwind CSS',
+                'Git', 'GitHub', 'Jest', 'Cypress', 'Webpack', 'Vite'
+              ].map((tech, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg px-3 py-2 text-center transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                >
+                  <span className="text-gray-200 font-medium text-sm">{tech}</span>
                 </div>
-
-                {/* Column 2 - Backend & Database */}
-                <div className="space-y-4 overflow-hidden">
-                  <h4 className="text-lg font-semibold text-white mb-4 text-center">Backend & Database</h4>
-                  <div className="animate-scroll space-y-3" style={{ animationDelay: '-13.33s' }}>
-                    {[
-                      'Node.js', 'Express.js', 'Python', 'Django', 'Flask', 'FastAPI', 'Java', 'Spring Boot',
-                      'C#', '.NET', 'PHP', 'Laravel', 'Ruby', 'Ruby on Rails', 'Go', 'Rust',
-                      'MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Redis', 'Elasticsearch', 'Firebase',
-                      'Supabase', 'DynamoDB', 'Cassandra', 'Neo4j'
-                    ].concat([
-                      'Node.js', 'Express.js', 'Python', 'Django', 'Flask', 'FastAPI', 'Java', 'Spring Boot',
-                      'C#', '.NET', 'PHP', 'Laravel', 'Ruby', 'Ruby on Rails', 'Go', 'Rust',
-                      'MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Redis', 'Elasticsearch', 'Firebase',
-                      'Supabase', 'DynamoDB', 'Cassandra', 'Neo4j'
-                    ]).map((tech, index) => (
-                      <div
-                        key={index}
-                        className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg px-4 py-3 transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                      >
-                        <span className="text-gray-200 font-medium text-sm">{tech}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Column 3 - Cloud, AI/ML & DevOps */}
-                <div className="space-y-4 overflow-hidden">
-                  <h4 className="text-lg font-semibold text-white mb-4 text-center">Cloud, AI/ML & DevOps</h4>
-                  <div className="animate-scroll space-y-3" style={{ animationDelay: '-26.67s' }}>
-                    {[
-                      'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins', 'GitLab CI',
-                      'GitHub Actions', 'Terraform', 'Ansible', 'Nginx', 'Apache',
-                      'TensorFlow', 'PyTorch', 'Scikit-learn', 'Pandas', 'NumPy', 'OpenCV', 'Keras',
-                      'Jupyter', 'Apache Spark', 'Hadoop', 'Tableau', 'Power BI',
-                      'Solidity', 'Web3.js', 'Ethereum', 'Hardhat', 'Truffle', 'Metamask', 'IPFS',
-                      'Jest', 'Cypress', 'Selenium', 'Postman', 'SonarQube', 'ESLint', 'Prettier',
-                      'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Confluence', 'Slack', 'Discord',
-                      'React Native', 'Flutter', 'Swift', 'Kotlin', 'Xamarin', 'Ionic', 'Cordova'
-                    ].concat([
-                      'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins', 'GitLab CI',
-                      'GitHub Actions', 'Terraform', 'Ansible', 'Nginx', 'Apache',
-                      'TensorFlow', 'PyTorch', 'Scikit-learn', 'Pandas', 'NumPy', 'OpenCV', 'Keras',
-                      'Jupyter', 'Apache Spark', 'Hadoop', 'Tableau', 'Power BI',
-                      'Solidity', 'Web3.js', 'Ethereum', 'Hardhat', 'Truffle', 'Metamask', 'IPFS',
-                      'Jest', 'Cypress', 'Selenium', 'Postman', 'SonarQube', 'ESLint', 'Prettier',
-                      'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Confluence', 'Slack', 'Discord',
-                      'React Native', 'Flutter', 'Swift', 'Kotlin', 'Xamarin', 'Ionic', 'Cordova'
-                    ]).map((tech, index) => (
-                      <div
-                        key={index}
-                        className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg px-4 py-3 transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                      >
-                        <span className="text-gray-200 font-medium text-sm">{tech}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Gradient overlays for smooth fade effect */}
-              <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none z-10"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none z-10"></div>
+              ))}
             </div>
           </div>
+        </section>
 
         {/* CTA Section */}
-        <section className="text-center">
+        <section className="text-center mb-20">
           <div className="glass rounded-2xl p-8 sm:p-12 border border-gray-600">
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-2xl w-fit mx-auto mb-6">
               <Zap className="w-12 h-12 text-white" />
