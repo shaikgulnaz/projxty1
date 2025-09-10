@@ -1,6 +1,7 @@
-import React from 'react';
-import { TrendingUp, Star, Sparkles, Play, ArrowRight } from 'lucide-react';
-import { Project } from '../types';
+import React from "react";
+import { TrendingUp, Star, Sparkles, Play, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Project } from "../types";
 
 interface HomePageProps {
   projects: Project[];
@@ -13,61 +14,79 @@ export const HomePage: React.FC<HomePageProps> = ({
   projects,
   onNavigateToProjects,
   onProjectClick,
-  onShareProject
+  onShareProject,
 }) => {
-  const featuredProjects = projects.filter(p => p.featured).slice(0, 3);
-  
+  const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
+
   const stats = {
     total: projects.length,
-    featured: projects.filter(p => p.featured).length,
-    categories: new Set(projects.map(p => p.category)).size
+    featured: projects.filter((p) => p.featured).length,
+    categories: new Set(projects.map((p) => p.category)).size,
   };
 
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section className="relative py-32 sm:py-52 overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
+      <section className="relative py-24 sm:py-40 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/40"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
-            {/* Left Half - Hero Content */}
-            <div className="lg:col-span-3 text-center lg:text-left slide-in">
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 neon-glow leading-tight">
-                Code That Actually <span className="gradient-text-fire">Slaps</span> 🔥
+          <div className="flex flex-col lg:grid lg:grid-cols-5 lg:gap-12 items-center">
+            {/* Left - Content */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="lg:col-span-3 text-center lg:text-left space-y-8"
+            >
+              <h1 className="text-4xl sm:text-6xl font-bold text-white leading-tight neon-glow">
+                Code That Actually{" "}
+                <span className="gradient-text-fire">Slaps</span> 🔥
               </h1>
-              <p className="text-xl sm:text-2xl text-gray-300 mb-12 leading-relaxed">
-                No cap - these projects are straight fire! 🚀 From AI that hits different to web apps that go hard. 
-                Perfect inspo for your next assignment or side hustle 💯
+              <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0">
+                🚀 From AI that hits different to web apps that go hard. Perfect
+                inspo for your next assignment or hustle 💯
               </p>
-              
+
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center lg:justify-start">
                 <button
                   onClick={onNavigateToProjects}
-                  className="group bg-white text-black px-10 py-5 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-xl"
+                  className="group bg-white text-black px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-3 hover:scale-105 transition"
                 >
                   Explore Projects
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
                 </button>
-                
                 <button
                   onClick={onNavigateToProjects}
-                  className="group glass border border-gray-600 text-white px-10 py-5 rounded-xl font-semibold text-lg hover:bg-white/10 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3"
+                  className="group glass border border-gray-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition flex items-center gap-3"
                 >
                   <TrendingUp className="w-5 h-5" />
                   View All {stats.total} Projects
                 </button>
               </div>
-            </div>
-            
-            {/* Right Half - Featured Projects Preview */}
-            <div className="lg:col-span-2 hidden lg:block slide-in" style={{ animationDelay: '200ms' }}>
-              {featuredProjects.length > 0 && (
-                <FeaturedSlideshow 
+            </motion.div>
+
+            {/* Right - Featured Preview */}
+            <div className="lg:col-span-2 mt-12 lg:mt-0 w-full">
+              <div className="lg:block hidden">
+                <FeaturedSlideshow
                   projects={featuredProjects}
                   onProjectClick={onProjectClick}
                 />
-              )}
+              </div>
+              <div className="lg:hidden">
+                <div className="flex gap-4 overflow-x-auto snap-x">
+                  {featuredProjects.map((p) => (
+                    <div key={p.id} className="min-w-[80%] snap-center">
+                      <FeaturedProjectCard
+                        project={p}
+                        onClick={onProjectClick}
+                        onShare={onShareProject}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -85,31 +104,30 @@ export const HomePage: React.FC<HomePageProps> = ({
             </p>
             <div className="w-32 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
-            <div className="glass rounded-2xl p-10 border border-gray-600 text-center hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105">
-              <div className="bg-black border border-gray-600 p-4 rounded-xl w-fit mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-5xl font-bold text-white mb-3">{stats.total}</h3>
-              <p className="text-gray-300">Total Projects</p>
-            </div>
-            
-            <div className="glass rounded-2xl p-10 border border-gray-600 text-center hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105 md:scale-110">
-              <div className="bg-black border border-gray-600 p-4 rounded-xl w-fit mx-auto mb-4">
-                <Star className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-5xl font-bold text-white mb-3">{stats.featured}</h3>
-              <p className="text-gray-300">Featured Projects</p>
-            </div>
-            
-            <div className="glass rounded-2xl p-10 border border-gray-600 text-center hover:shadow-xl hover:shadow-gray-500/20 transition-all duration-300 transform hover:scale-105">
-              <div className="bg-black border border-gray-600 p-4 rounded-xl w-fit mx-auto mb-4">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-5xl font-bold text-white mb-3">{stats.categories}</h3>
-              <p className="text-gray-300">Categories</p>
-            </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {[
+              { icon: <TrendingUp />, value: stats.total, label: "Total Projects" },
+              { icon: <Star />, value: stats.featured, label: "Featured Projects" },
+              { icon: <Sparkles />, value: stats.categories, label: "Categories" },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: i * 0.2 }}
+                viewport={{ once: true }}
+                className="glass rounded-2xl p-8 border border-gray-600 text-center hover:scale-105 hover:shadow-xl transition"
+              >
+                <div className="bg-black border border-gray-600 p-4 rounded-xl w-fit mx-auto mb-4">
+                  {stat.icon}
+                </div>
+                <h3 className="text-4xl font-bold text-white mb-2">
+                  {stat.value}
+                </h3>
+                <p className="text-gray-300">{stat.label}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -127,14 +145,30 @@ export const HomePage: React.FC<HomePageProps> = ({
               </p>
               <div className="w-32 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
+
+            {/* Desktop Grid */}
+            <div className="lg:grid lg:grid-cols-3 gap-10 hidden">
               {featuredProjects.map((project, index) => (
-                <div
+                <motion.div
                   key={project.id}
-                  className="slide-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.2 }}
+                  viewport={{ once: true }}
                 >
+                  <FeaturedProjectCard
+                    project={project}
+                    onClick={onProjectClick}
+                    onShare={onShareProject}
+                  />
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Mobile Carousel */}
+            <div className="lg:hidden flex gap-6 overflow-x-auto snap-x">
+              {featuredProjects.map((project) => (
+                <div key={project.id} className="min-w-[85%] snap-center">
                   <FeaturedProjectCard
                     project={project}
                     onClick={onProjectClick}
@@ -143,17 +177,17 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
               ))}
             </div>
-            
+
             <div className="text-center mt-20">
               <button
                 onClick={() => {
                   onNavigateToProjects();
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="group bg-black border border-gray-600 text-white px-10 py-5 rounded-xl font-semibold text-lg hover:bg-gray-900 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 mx-auto"
+                className="group bg-black border border-gray-600 text-white px-10 py-5 rounded-xl font-semibold text-lg hover:bg-gray-900 transition flex items-center justify-center gap-3 mx-auto"
               >
                 View All Projects
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
               </button>
             </div>
           </div>
@@ -163,59 +197,46 @@ export const HomePage: React.FC<HomePageProps> = ({
   );
 };
 
-// Featured Project Card Component
+// Featured Project Card
 const FeaturedProjectCard: React.FC<{
   project: Project;
   onClick: (project: Project) => void;
   onShare: (project: Project) => void;
-}> = ({ project, onClick, onShare }) => {
+}> = ({ project, onClick }) => {
   return (
-    <div 
-      className="group glass rounded-2xl overflow-hidden border border-gray-600 hover:border-gray-400 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-500/20"
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      className="group glass rounded-2xl overflow-hidden border border-gray-600 hover:border-gray-400 cursor-pointer transition hover:shadow-2xl"
       onClick={() => onClick(project)}
     >
       <div className="relative h-56 overflow-hidden">
         <img
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
+          className="w-full h-full object-cover group-hover:scale-110 transition"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
-        {/* Featured Badge */}
         <div className="absolute top-3 right-3 bg-black border border-gray-600 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 shadow-lg">
           <Sparkles className="w-3 h-3" />
           Featured
         </div>
-        
-        {/* Play Button */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-          <div className="bg-black/80 hover:bg-black text-white p-5 rounded-full transition-all duration-300 transform hover:scale-110 backdrop-blur-sm border border-gray-600 shadow-2xl">
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+          <div className="bg-black/80 text-white p-5 rounded-full border border-gray-600">
             <Play className="w-6 h-6 ml-1" fill="currentColor" />
           </div>
         </div>
       </div>
-      
       <div className="p-8">
-        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gray-200 transition-colors duration-300">
+        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gray-200 transition">
           {project.title}
         </h3>
         <p className="text-gray-300 mb-6 line-clamp-2 leading-relaxed">
           {project.description}
         </p>
-        
         <div className="flex flex-wrap gap-3">
           {project.technologies.slice(0, 3).map((tech, index) => (
             <span
               key={index}
-              onClick={() => {
-                onNavigateToProjects();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="px-4 py-2 bg-gray-800 text-gray-200 rounded-full text-sm font-medium border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300"
+              className="px-4 py-2 bg-gray-800 text-gray-200 rounded-full text-sm font-medium border border-gray-600 hover:bg-gray-700 transition"
             >
               {tech}
             </span>
@@ -227,114 +248,82 @@ const FeaturedProjectCard: React.FC<{
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-// Featured Slideshow Component
+// Featured Slideshow
 const FeaturedSlideshow: React.FC<{
   projects: Project[];
   onProjectClick: (project: Project) => void;
 }> = ({ projects, onProjectClick }) => {
   const [currentIndex, setCurrentIndex] = React.useState(0);
-  const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   React.useEffect(() => {
-    if (projects.length === 0) return;
-    
     const interval = setInterval(() => {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % projects.length);
-        setIsTransitioning(false);
-      }, 150);
+      setCurrentIndex((prev) => (prev + 1) % projects.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, [projects.length]);
-
-  const handleIndicatorClick = (index: number) => {
-    if (index === currentIndex) return;
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentIndex(index);
-      setIsTransitioning(false);
-    }, 150);
-  };
-
-  if (projects.length === 0) return null;
 
   const currentProject = projects[currentIndex];
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center space-x-3 mb-8">
-        <Star className="w-6 h-6 text-gray-400" />
-        <h3 className="text-2xl font-bold text-white">Featured Projects</h3>
-      </div>
-      
-      <div className="glass rounded-2xl border border-gray-600 overflow-hidden transform transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-gray-500/20">
-        <div 
-          className={`relative h-80 cursor-pointer overflow-hidden transition-all duration-300 ${isTransitioning ? 'opacity-90 scale-95' : 'opacity-100 scale-100'}`}
-          onClick={() => onProjectClick(currentProject)}
-        >
-          <img
-            src={currentProject.image}
-            alt={currentProject.title} 
-            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-          />
-          
-          <div className="absolute top-3 right-3 bg-black/80 backdrop-blur-sm border border-gray-600 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 shadow-lg">
-            <Sparkles className="w-3 h-3 text-white" />
-            Featured
-          </div>
-        </div>
-        
-        <div className={`p-8 bg-gray-900/20 backdrop-blur-sm transition-all duration-300 ${isTransitioning ? 'opacity-80' : 'opacity-100'}`}>
-          <h4 className="text-xl font-bold text-white mb-3 hover:text-gray-200 transition-colors duration-300">
-            {currentProject.title}
-          </h4>
-          <p className="text-gray-300 text-sm mb-6 line-clamp-2 leading-relaxed">
-            {currentProject.description}
-          </p>
-          
-          <div className="flex flex-wrap gap-3 mb-6">
-            {currentProject.technologies.slice(0, 3).map((tech, index) => (
-              <span
-                key={index}
-                className="px-4 py-2 bg-gray-800 text-gray-200 rounded-full text-xs font-medium border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all duration-300"
-              >
-                {tech}
-              </span>
-            ))}
-            {currentProject.technologies.length > 3 && (
-              <span className="px-4 py-2 bg-gray-700 text-gray-300 rounded-full text-xs font-medium border border-gray-500">
-                +{currentProject.technologies.length - 3}
-              </span>
-            )}
-          </div>
-          
-          <div className="flex justify-center space-x-3">
-            {projects.map((_, index) => (
-              <button
-                key={index}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleIndicatorClick(index);
-                }}
-                className={`w-3 h-3 rounded-full transition-all duration-500 hover:scale-125 ${
-                  index === currentIndex 
-                    ? 'bg-white w-8 shadow-lg shadow-white/50' 
-                    : 'bg-gray-500 hover:bg-gray-400 hover:w-5'
-                }`}
-              />
-            ))}
-          </div>
+    <motion.div
+      key={currentIndex}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="glass rounded-2xl border border-gray-600 overflow-hidden hover:shadow-2xl"
+    >
+      <div
+        className="relative h-80 cursor-pointer overflow-hidden"
+        onClick={() => onProjectClick(currentProject)}
+      >
+        <img
+          src={currentProject.image}
+          alt={currentProject.title}
+          className="w-full h-full object-cover hover:scale-110 transition"
+        />
+        <div className="absolute top-3 right-3 bg-black/80 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+          <Sparkles className="w-3 h-3" />
+          Featured
         </div>
       </div>
-    </div>
+      <div className="p-8 bg-gray-900/40 backdrop-blur-sm">
+        <h4 className="text-xl font-bold text-white mb-3">
+          {currentProject.title}
+        </h4>
+        <p className="text-gray-300 text-sm mb-6 line-clamp-2">
+          {currentProject.description}
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {currentProject.technologies.slice(0, 3).map((tech, index) => (
+            <span
+              key={index}
+              className="px-4 py-2 bg-gray-800 text-gray-200 rounded-full text-xs font-medium border border-gray-600 hover:bg-gray-700 transition"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+        <div className="flex justify-center space-x-3 mt-6">
+          {projects.map((_, index) => (
+            <button
+              key={index}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentIndex(index);
+              }}
+              className={`w-3 h-3 rounded-full transition ${
+                index === currentIndex
+                  ? "bg-white w-8"
+                  : "bg-gray-500 hover:bg-gray-400"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </motion.div>
   );
 };
