@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Code2, Users, Star, TrendingUp, LogOut, Lock, User, Phone, X, Shield, MessageCircle, Sparkles, Menu, Home, Info, Briefcase, FolderOpen, Mail } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { ProjectCard } from './components/ProjectCard';
 import { ProjectUpload } from './components/ProjectUpload';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
@@ -10,13 +11,14 @@ import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ContactPage } from './pages/ContactPage';
+import { BlogPage } from './pages/BlogPage';
 import { Project } from './types';
 import { useProjects } from './hooks/useProjects';
 import { useSearch } from './hooks/useSearch';
 import { useDebounce } from './hooks/useDebounce';
 import { signInWithOTP, verifyOTP, signOut } from './lib/supabase';
 
-type Page = 'home' | 'about' | 'services' | 'projects' | 'contact';
+type Page = 'home' | 'about' | 'services' | 'projects' | 'blog' | 'contact';
 
 function App() {
   const { projects, loading, error, addProject, updateProject, deleteProject } = useProjects();
@@ -66,6 +68,7 @@ function App() {
     { id: 'about', label: 'About', icon: Info },
     { id: 'services', label: 'Services', icon: Briefcase },
     { id: 'projects', label: 'Projects', icon: FolderOpen },
+    { id: 'blog', label: 'Blog', icon: BookOpen },
     { id: 'contact', label: 'Contact', icon: Mail },
   ];
 
@@ -468,6 +471,7 @@ function App() {
             }}
           />
         )}
+        {currentPage === 'blog' && <BlogPage isAuthenticated={isAuthenticated} />}
         {currentPage === 'contact' && <ContactPage />}
       </main>
 
