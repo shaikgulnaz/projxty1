@@ -1,26 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Code2, Users, Star, TrendingUp, LogOut, User, Shield, MessageCircle, Sparkles, Menu, Home, Info, Briefcase, FolderOpen, Mail } from 'lucide-react';
-import { BookOpen } from 'lucide-react';
+import { Search, Plus, Code2, Users, Star, TrendingUp, LogOut, Lock, User, Phone, X, Shield, MessageCircle, Sparkles, Menu, Home, Info, Briefcase, FolderOpen, Mail } from 'lucide-react';
 import { ProjectCard } from './components/ProjectCard';
 import { ProjectUpload } from './components/ProjectUpload';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { ShareModal } from './components/ShareModal';
 import { SearchBar } from './components/SearchBar';
-import { AuthModal } from './components/AuthModal';
-import { ProfileModal } from './components/ProfileModal';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ContactPage } from './pages/ContactPage';
-import { BlogPage } from './pages/BlogPage';
 import { Project } from './types';
 import { useProjects } from './hooks/useProjects';
 import { useSearch } from './hooks/useSearch';
 import { useDebounce } from './hooks/useDebounce';
-import { signOut, getCurrentUser, getUserRole, onAuthStateChange } from './lib/supabase';
+import { signInWithOTP, verifyOTP, signOut } from './lib/supabase';
 
-type Page = 'home' | 'about' | 'services' | 'projects' | 'blog' | 'contact';
+type Page = 'home' | 'about' | 'services' | 'projects' | 'contact';
 
 function App() {
   const { projects, loading, error, addProject, updateProject, deleteProject } = useProjects();
@@ -45,10 +41,15 @@ function App() {
   const [showShare, setShowShare] = useState(false);
   const [sharingProject, setSharingProject] = useState<Project | null>(null);
   const [showAuth, setShowAuth] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [userRole, setUserRole] = useState<'admin' | 'user' | 'guest'>('guest');
+  const [authStep, setAuthStep] = useState<'phone' | 'otp'>('phone');
+  const [authForm, setAuthForm] = useState({ 
+    phone: '', 
+    otp: '', 
+    error: '', 
+    isLoading: false,
+    otpSent: false 
+  });
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   
   // Header scroll state
@@ -65,7 +66,6 @@ function App() {
     { id: 'about', label: 'About', icon: Info },
     { id: 'services', label: 'Services', icon: Briefcase },
     { id: 'projects', label: 'Projects', icon: FolderOpen },
-    { id: 'blog', label: 'Blog', icon: BookOpen },
     { id: 'contact', label: 'Contact', icon: Mail },
   ];
 
@@ -108,28 +108,10 @@ function App() {
   }, [lastScrollY]);
   // Check authentication status on mount
   useEffect(() => {
-    // Check current user on mount
-    getCurrentUser().then(({ user, session }) => {
-      if (user && session) {
-        setUser(user);
-        setIsAuthenticated(true);
-        setUserRole(getUserRole(user.email));
-      }
-    });
-
-    // Listen to auth changes
-    const { data: { subscription } } = onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        setUser(session.user);
-        setIsAuthenticated(true);
-        setUserRole(getUserRole(session.user.email));
-        setShowAuth(false);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setIsAuthenticated(false);
-        setUserRole('guest');
-      }
-    });
+    const authStatus = localStorage.getItem('devcode_auth');
+    if (authStatus === 'authenticated') {
+      setIsAuthenticated(true);
+    }
 
     // Check for shared project in URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -142,10 +124,6 @@ function App() {
         setCurrentPage('projects');
       }
     }
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, [projects]);
 
   const handleAddProject = async (projectData: Omit<Project, 'id' | 'createdAt'>) => {
@@ -186,9 +164,58 @@ function App() {
     setShowShare(true);
   };
 
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthForm(prev => ({ ...prev, isLoading: true, error: '' }));
+
+    const result = await signInWithOTP(authForm.phone);
+    
+    if (result.success) {
+      setAuthForm(prev => ({ 
+        ...prev, 
+        isLoading: false, 
+        otpSent: true 
+      }));
+      setAuthStep('otp');
+    } else {
+      setAuthForm(prev => ({ 
+        ...prev, 
+        error: 'This phone number is not authorized for admin access.',
+        isLoading: false 
+      }));
+    }
+  };
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthForm(prev => ({ ...prev, isLoading: true, error: '' }));
+
+    const result = await verifyOTP(authForm.phone, authForm.otp);
+    
+    if (result.success) {
+      setIsAuthenticated(true);
+      localStorage.setItem('devcode_auth', 'authenticated');
+      setShowAuth(false);
+      setAuthForm({ phone: '', otp: '', error: '', isLoading: false, otpSent: false });
+      setAuthStep('phone');
+    } else {
+      setAuthForm(prev => ({ 
+        ...prev, 
+        error: 'Invalid OTP. Please check and try again.',
+        isLoading: false 
+      }));
+    }
+  };
+
   const handleLogout = async () => {
     await signOut();
+    setIsAuthenticated(false);
+    localStorage.removeItem('devcode_auth');
     setShowMobileMenu(false);
+  };
+
+  const handleAuthClose = () => {
+    setShowAuth(false);
   };
 
   const handleNavigate = (page: Page) => {
@@ -310,7 +337,7 @@ function App() {
             {/* Right Side Controls */}
             <div className="flex items-center space-x-3">
               {/* Admin Status */}
-              {isAuthenticated && userRole === 'admin' && (
+              {isAuthenticated && (
                 <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium glass text-gray-300 border border-gray-600">
                   <Shield className="w-3 h-3" />
                   Admin
@@ -320,26 +347,13 @@ function App() {
               {/* Desktop Auth */}
               <div className="hidden sm:flex items-center space-x-3">
                 {isAuthenticated ? (
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => setShowProfile(true)}
-                      className="flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-white transition-all duration-300 glass rounded-lg hover:bg-white/10"
-                    >
-                      <img
-                        src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.full_name || user?.email)}&background=1f2937&color=ffffff&size=32`}
-                        alt="Profile"
-                        className="w-6 h-6 rounded-full"
-                      />
-                      <span className="text-sm">{user?.user_metadata?.full_name?.split(' ')[0] || 'Profile'}</span>
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="p-2 text-gray-300 hover:text-white transition-all duration-300 glass rounded-lg hover:bg-white/10"
-                      title="Logout"
-                    >
-                      <LogOut className="w-4 h-4" />
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-white transition-all duration-300 glass rounded-lg hover:bg-white/10"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
                 ) : (
                   <button
                     onClick={() => setShowAuth(true)}
@@ -387,21 +401,10 @@ function App() {
               <div className="pt-4 border-t border-gray-700">
                 {isAuthenticated ? (
                   <>
-                    <button
-                      onClick={() => {
-                        setShowProfile(true);
-                        setShowMobileMenu(false);
-                      }}
-                      className="w-full flex items-center space-x-3 px-4 py-3 text-gray-300 hover:text-white transition-all duration-300 glass rounded-lg hover:bg-white/10 mb-2"
-                    >
-                      <img
-                        src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.full_name || user?.email)}&background=1f2937&color=ffffff&size=32`}
-                        alt="Profile"
-                        className="w-6 h-6 rounded-full"
-                      />
-                      <span>{user?.user_metadata?.full_name || 'View Profile'}</span>
-                      {userRole === 'admin' && <Shield className="w-4 h-4 text-yellow-400" />}
-                    </button>
+                    <div className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 mb-2">
+                      <Shield className="w-4 h-4" />
+                      Admin Mode Active
+                    </div>
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center space-x-2 px-4 py-3 text-gray-300 hover:text-white transition-all duration-300 glass rounded-lg hover:bg-white/10"
@@ -449,7 +452,7 @@ function App() {
             selectedCategory={selectedCategory}
             isSearching={isSearching}
             searchStats={searchStats}
-            isAuthenticated={isAuthenticated && userRole === 'admin'}
+            isAuthenticated={isAuthenticated}
             onSearchChange={setSearchTerm}
             onCategoryChange={setSelectedCategory}
             onProjectClick={handleProjectClick}
@@ -465,7 +468,6 @@ function App() {
             }}
           />
         )}
-        {currentPage === 'blog' && <BlogPage isAuthenticated={isAuthenticated && userRole === 'admin'} />}
         {currentPage === 'contact' && <ContactPage />}
       </main>
 
@@ -492,18 +494,141 @@ function App() {
 
 
       {/* Auth Modal */}
-      <AuthModal
-        isOpen={showAuth}
-        onClose={() => setShowAuth(false)}
-      />
+      {showAuth && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="glass rounded-2xl shadow-2xl w-full max-w-sm border border-gray-600">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="bg-black border border-gray-600 p-2 rounded-lg">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold text-white">Login</h2>
+              </div>
+              <button
+                onClick={handleAuthClose}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors duration-200 touch-manipulation"
+              >
+                <X className="w-5 h-5 text-white/60" />
+              </button>
+            </div>
 
-      {/* Profile Modal */}
-      <ProfileModal
-        isOpen={showProfile}
-        onClose={() => setShowProfile(false)}
-        user={user}
-        userRole={userRole}
-      />
+            {authStep === 'phone' ? (
+              <form onSubmit={handlePhoneSubmit} className="p-4 sm:p-6">
+                <div className="mb-6">
+                  <p className="text-gray-300 text-sm mb-6 text-center">
+                    Enter your registered phone number to receive OTP
+                  </p>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-white mb-2">Phone Number</label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="tel"
+                        value={authForm.phone}
+                        onChange={(e) => setAuthForm(prev => ({ ...prev, phone: e.target.value, error: '' }))}
+                        className="w-full pl-10 pr-4 py-4 glass border border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all duration-200 text-white placeholder-gray-400 text-base"
+                        placeholder="Enter phone number"
+                        required
+                        disabled={authForm.isLoading}
+                      />
+                    </div>
+                  </div>
+                  
+                  {authForm.error && (
+                    <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
+                      <p className="text-red-200 text-sm flex items-center gap-2">
+                        <X className="w-4 h-4" />
+                        {authForm.error}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={authForm.isLoading}
+                  className="w-full bg-black border border-gray-600 text-white py-4 px-6 rounded-xl font-medium hover:bg-gray-900 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 touch-manipulation"
+                >
+                  {authForm.isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Sending OTP...
+                    </>
+                  ) : (
+                    <>
+                      <Phone className="w-5 h-5" />
+                      Send OTP
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleOtpSubmit} className="p-4 sm:p-6">
+                <div className="mb-6">
+                  <p className="text-gray-300 text-sm mb-6 text-center">
+                    Enter the 6-digit OTP sent to {authForm.phone}
+                  </p>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-white mb-2">OTP Code</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="text"
+                        value={authForm.otp}
+                        onChange={(e) => setAuthForm(prev => ({ ...prev, otp: e.target.value, error: '' }))}
+                        className="w-full pl-10 pr-4 py-4 glass border border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all duration-200 text-center text-lg tracking-widest text-white placeholder-gray-400"
+                        placeholder="000000"
+                        maxLength={6}
+                        required
+                        disabled={authForm.isLoading}
+                      />
+                    </div>
+                  </div>
+                  
+                  {authForm.error && (
+                    <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
+                      <p className="text-red-200 text-sm flex items-center gap-2">
+                        <X className="w-4 h-4" />
+                        {authForm.error}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    type="submit"
+                    disabled={authForm.isLoading}
+                    className="w-full bg-black border border-gray-600 text-white py-4 px-6 rounded-xl font-medium hover:bg-gray-900 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 touch-manipulation"
+                  >
+                    {authForm.isLoading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Verifying...
+                      </>
+                    ) : (
+                      <>
+                        <User className="w-5 h-5" />
+                        Verify OTP
+                      </>
+                    )}
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setAuthStep('phone')}
+                    className="w-full text-gray-400 hover:text-white py-3 transition-colors touch-manipulation"
+                  >
+                    ← Back to phone number
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Project Upload Modal */}
       {showUpload && (
@@ -514,7 +639,7 @@ function App() {
             setEditingProject(null);
           }}
           onSubmit={editingProject ? handleEditProject : handleAddProject}
-          isAdmin={isAuthenticated && userRole === 'admin'}
+          editingProject={editingProject}
         />
       )}
 

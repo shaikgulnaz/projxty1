@@ -20,29 +20,25 @@ export const supabase = isValidUrl && isValidKey
   ? createClient<Database>(supabaseUrl, supabaseAnonKey)
   : null;
 
-// Admin email addresses - these users get full admin access
-const ADMIN_EMAILS = [
-  'admin@projxty.com',
-  'projxty@gmail.com',
-  // Add more admin emails here
-];
-
 // Auth helper functions
-export const signInWithGoogle = async () => {
+export const signInWithOTP = async (phone: string) => {
   if (!supabase) return { success: false, error: 'Supabase not configured' };
   
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${window.location.origin}`,
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
-      }
-    }
-  });
+  // For demo purposes, we'll simulate OTP sending
+  // In production, you'd integrate with SMS service
+  return { success: phone === '6361064550' };
+};
+
+export const verifyOTP = async (phone: string, otp: string) => {
+  if (!supabase) return { success: false, error: 'Supabase not configured' };
   
-  return { success: !error, data, error };
+  // For demo purposes, we'll check against hardcoded values
+  // In production, you'd verify against SMS service
+  if (phone === '6361064550' && otp === '664477') {
+    // Return success for demo authentication
+    return { success: true, data: { user: { id: 'demo-admin' } }, error: null };
+  }
+  return { success: false, error: { message: 'Invalid OTP' } };
 };
 
 export const signOut = async () => {
@@ -50,30 +46,4 @@ export const signOut = async () => {
   
   const { error } = await supabase.auth.signOut();
   return { success: !error, error };
-};
-
-export const getCurrentUser = async () => {
-  if (!supabase) return { user: null, session: null };
-  
-  const { data: { user }, error } = await supabase.auth.getUser();
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  return { user, session, error };
-};
-
-export const isAdmin = (userEmail: string | undefined): boolean => {
-  if (!userEmail) return false;
-  return ADMIN_EMAILS.includes(userEmail.toLowerCase());
-};
-
-export const getUserRole = (userEmail: string | undefined): 'admin' | 'user' | 'guest' => {
-  if (!userEmail) return 'guest';
-  return isAdmin(userEmail) ? 'admin' : 'user';
-};
-
-// Listen to auth changes
-export const onAuthStateChange = (callback: (event: string, session: any) => void) => {
-  if (!supabase) return { data: { subscription: { unsubscribe: () => {} } } };
-  
-  return supabase.auth.onAuthStateChange(callback);
 };
