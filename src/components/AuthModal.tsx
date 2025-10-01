@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, User, Shield, Chrome } from 'lucide-react';
-import { signInWithGoogle } from '../lib/supabase';
+import { signInWithGoogle, supabase } from '../lib/supabase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -95,6 +95,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
           </div>
+
+          {!supabase && (
+            <div className="mt-4 p-3 bg-orange-600/20 border border-orange-400/30 rounded-lg">
+              <p className="text-orange-200 text-xs text-center">
+                <strong>Setup Required:</strong> Connect to Supabase and configure Google OAuth to enable authentication.
+              </p>
+            </div>
+          )}
 
           <p className="text-gray-400 text-xs text-center mt-4">
             By signing in, you agree to our terms of service and privacy policy.
