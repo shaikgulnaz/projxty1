@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Phone, Lock, User, Shield, MessageCircle } from 'lucide-react';
+import { X, Lock, User, Shield, Mail } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface AuthModalProps {
@@ -9,90 +9,18 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess }) => {
-  const [authStep, setAuthStep] = useState<'phone' | 'otp' | 'profile'>('phone');
+  const [authStep, setAuthStep] = useState<'login' | 'signup'>('login');
   const [authForm, setAuthForm] = useState({
-    phone: '',
-    otp: '',
+    email: '',
+    password: '',
     name: '',
     error: '',
-    isLoading: false,
-    otpSent: false,
-    isSignUp: false
+    isLoading: false
   });
 
   if (!isOpen) return null;
 
-  const formatPhoneNumber = (phone: string) => {
-    // Remove all non-digits
-    const digits = phone.replace(/\D/g, '');
-    
-    // Add +91 prefix if not present and it's a 10-digit Indian number
-    if (digits.length === 10 && !digits.startsWith('91')) {
-      return `+91${digits}`;
-    }
-    
-    // If it starts with 91 and has 12 digits total, add +
-    if (digits.length === 12 && digits.startsWith('91')) {
-      return `+${digits}`;
-    }
-    
-    // If it already has country code format
-    if (phone.startsWith('+')) {
-      return phone;
-    }
-    
-    return `+91${digits}`;
-  };
-
-  const handlePhoneSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthForm(prev => ({ ...prev, isLoading: true, error: '' }));
-
-    try {
-      const formattedPhone = formatPhoneNumber(authForm.phone);
-      
-      if (!supabase) {
-        throw new Error('Authentication service not available');
-      }
-
-      // Check if user exists
-      const { data: existingUser } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('phone', formattedPhone)
-        .maybeSingle();
-
-      // Send OTP via Supabase Auth
-      const { data, error } = await supabase.auth.signInWithOtp({
-        phone: formattedPhone,
-        options: {
-          channel: 'sms'
-        }
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      setAuthForm(prev => ({
-        ...prev,
-        phone: formattedPhone,
-        isLoading: false,
-        otpSent: true,
-        isSignUp: !existingUser
-      }));
-      setAuthStep('otp');
-
-    } catch (error: any) {
-      setAuthForm(prev => ({
-        ...prev,
-        error: error.message || 'Failed to send OTP. Please try again.',
-        isLoading: false
-      }));
-    }
-  };
-
-  const handleOtpSubmit = async (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthForm(prev => ({ ...prev, isLoading: true, error: '' }));
 
@@ -101,11 +29,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         throw new Error('Authentication service not available');
       }
 
-      // Verify OTP
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone: authForm.phone,
-        token: authForm.otp,
-        type: 'sms'
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: authForm.email,
+        password: authForm.password
       });
 
       if (error) {
@@ -113,26 +39,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
       }
 
       if (data.user) {
-        // Check if this is a new user (sign up)
-        if (authForm.isSignUp) {
-          setAuthStep('profile');
-          setAuthForm(prev => ({ ...prev, isLoading: false }));
-        } else {
-          // Existing user - complete login
-          await completeLogin(data.user);
-        }
+        await completeLogin(data.user);
       }
 
     } catch (error: any) {
       setAuthForm(prev => ({
         ...prev,
-        error: error.message || 'Invalid OTP. Please try again.',
+        error: error.message || 'Invalid credentials. Please try again.',
         isLoading: false
       }));
     }
   };
 
-  const handleProfileSubmit = async (e: React.FormEvent) => {
+  const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthForm(prev => ({ ...prev, isLoading: true, error: '' }));
 
@@ -141,33 +60,42 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         throw new Error('Authentication service not available');
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('User not found');
+      const { data, error } = await supabase.auth.signUp({
+        email: authForm.email,
+        password: authForm.password,
+        options: {
+          data: {
+            name: authForm.name
+          }
+        }
+      });
+
+      if (error) {
+        throw error;
       }
 
-      // Create user profile
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert({
-          id: user.id,
-          phone: authForm.phone,
-          name: authForm.name,
-          role: 'user',
-          created_at: new Date().toISOString()
-        });
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .insert({
+            id: data.user.id,
+            email: authForm.email,
+            name: authForm.name,
+            role: 'user',
+            created_at: new Date().toISOString()
+          });
 
-      if (profileError) {
-        throw profileError;
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+        }
+
+        await completeLogin(data.user);
       }
-
-      await completeLogin(user);
 
     } catch (error: any) {
       setAuthForm(prev => ({
         ...prev,
-        error: error.message || 'Failed to create profile. Please try again.',
+        error: error.message || 'Failed to create account. Please try again.',
         isLoading: false
       }));
     }
@@ -198,51 +126,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
   const handleClose = () => {
     setAuthForm({
-      phone: '',
-      otp: '',
+      email: '',
+      password: '',
       name: '',
       error: '',
-      isLoading: false,
-      otpSent: false,
-      isSignUp: false
+      isLoading: false
     });
-    setAuthStep('phone');
+    setAuthStep('login');
     onClose();
-  };
-
-  const handleResendOTP = async () => {
-    setAuthForm(prev => ({ ...prev, isLoading: true, error: '' }));
-
-    try {
-      if (!supabase) {
-        throw new Error('Authentication service not available');
-      }
-
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: authForm.phone,
-        options: {
-          channel: 'sms'
-        }
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      setAuthForm(prev => ({
-        ...prev,
-        isLoading: false,
-        error: '',
-        otpSent: true
-      }));
-
-    } catch (error: any) {
-      setAuthForm(prev => ({
-        ...prev,
-        error: error.message || 'Failed to resend OTP. Please try again.',
-        isLoading: false
-      }));
-    }
   };
 
   return (
@@ -254,8 +145,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <h2 className="text-lg sm:text-xl font-bold text-white">
-              {authStep === 'phone' ? 'Login / Sign Up' : 
-               authStep === 'otp' ? 'Verify OTP' : 'Complete Profile'}
+              {authStep === 'login' ? 'Login' : 'Sign Up'}
             </h2>
           </div>
           <button
@@ -266,33 +156,46 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           </button>
         </div>
 
-        {/* Phone Number Step */}
-        {authStep === 'phone' && (
-          <form onSubmit={handlePhoneSubmit} className="p-4 sm:p-6">
+        {/* Login Form */}
+        {authStep === 'login' && (
+          <form onSubmit={handleLoginSubmit} className="p-4 sm:p-6">
             <div className="mb-6">
               <p className="text-gray-300 text-sm mb-6 text-center">
-                Enter your mobile number to get started
+                Welcome back! Login to your account
               </p>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-white mb-2">Mobile Number</label>
+                <label className="block text-sm font-medium text-white mb-2">Email</label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
-                    type="tel"
-                    value={authForm.phone}
-                    onChange={(e) => setAuthForm(prev => ({ ...prev, phone: e.target.value, error: '' }))}
+                    type="email"
+                    value={authForm.email}
+                    onChange={(e) => setAuthForm(prev => ({ ...prev, email: e.target.value, error: '' }))}
                     className="w-full pl-10 pr-4 py-4 glass border border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all duration-200 text-white placeholder-gray-400 text-base"
-                    placeholder="Enter mobile number"
+                    placeholder="Enter your email"
                     required
                     disabled={authForm.isLoading}
                   />
                 </div>
-                <p className="text-gray-400 text-xs mt-2">
-                  We'll send you an OTP to verify your number
-                </p>
               </div>
-              
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-white mb-2">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="password"
+                    value={authForm.password}
+                    onChange={(e) => setAuthForm(prev => ({ ...prev, password: e.target.value, error: '' }))}
+                    className="w-full pl-10 pr-4 py-4 glass border border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all duration-200 text-white placeholder-gray-400 text-base"
+                    placeholder="Enter your password"
+                    required
+                    disabled={authForm.isLoading}
+                  />
+                </div>
+              </div>
+
               {authForm.error && (
                 <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
                   <p className="text-red-200 text-sm flex items-center gap-2">
@@ -311,100 +214,34 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               {authForm.isLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Sending OTP...
+                  Logging in...
                 </>
               ) : (
                 <>
-                  <MessageCircle className="w-5 h-5" />
-                  Send OTP
+                  <User className="w-5 h-5" />
+                  Login
                 </>
               )}
             </button>
-          </form>
-        )}
 
-        {/* OTP Verification Step */}
-        {authStep === 'otp' && (
-          <form onSubmit={handleOtpSubmit} className="p-4 sm:p-6">
-            <div className="mb-6">
-              <p className="text-gray-300 text-sm mb-6 text-center">
-                Enter the 6-digit OTP sent to {authForm.phone}
-              </p>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-white mb-2">OTP Code</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    value={authForm.otp}
-                    onChange={(e) => setAuthForm(prev => ({ ...prev, otp: e.target.value.replace(/\D/g, '').slice(0, 6), error: '' }))}
-                    className="w-full pl-10 pr-4 py-4 glass border border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all duration-200 text-center text-lg tracking-widest text-white placeholder-gray-400"
-                    placeholder="000000"
-                    maxLength={6}
-                    required
-                    disabled={authForm.isLoading}
-                  />
-                </div>
-              </div>
-              
-              {authForm.error && (
-                <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
-                  <p className="text-red-200 text-sm flex items-center gap-2">
-                    <X className="w-4 h-4" />
-                    {authForm.error}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
+            <div className="mt-4 text-center">
               <button
-                type="submit"
-                disabled={authForm.isLoading || authForm.otp.length !== 6}
-                className="w-full bg-black border border-gray-600 text-white py-4 px-6 rounded-xl font-medium hover:bg-gray-900 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 touch-manipulation"
+                type="button"
+                onClick={() => setAuthStep('signup')}
+                className="text-gray-400 hover:text-white transition-colors text-sm"
               >
-                {authForm.isLoading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Verifying...
-                  </>
-                ) : (
-                  <>
-                    <User className="w-5 h-5" />
-                    Verify OTP
-                  </>
-                )}
+                Don't have an account? <span className="font-medium">Sign Up</span>
               </button>
-              
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setAuthStep('phone')}
-                  className="text-gray-400 hover:text-white py-2 transition-colors touch-manipulation text-sm"
-                >
-                  ← Change Number
-                </button>
-                
-                <button
-                  type="button"
-                  onClick={handleResendOTP}
-                  disabled={authForm.isLoading}
-                  className="text-gray-400 hover:text-white py-2 transition-colors touch-manipulation text-sm disabled:opacity-50"
-                >
-                  Resend OTP
-                </button>
-              </div>
             </div>
           </form>
         )}
 
-        {/* Profile Setup Step (for new users) */}
-        {authStep === 'profile' && (
-          <form onSubmit={handleProfileSubmit} className="p-4 sm:p-6">
+        {/* Signup Form */}
+        {authStep === 'signup' && (
+          <form onSubmit={handleSignupSubmit} className="p-4 sm:p-6">
             <div className="mb-6">
               <p className="text-gray-300 text-sm mb-6 text-center">
-                Complete your profile to get started
+                Create your account to get started
               </p>
 
               <div className="mb-4">
@@ -422,7 +259,40 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   />
                 </div>
               </div>
-              
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-white mb-2">Email</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="email"
+                    value={authForm.email}
+                    onChange={(e) => setAuthForm(prev => ({ ...prev, email: e.target.value, error: '' }))}
+                    className="w-full pl-10 pr-4 py-4 glass border border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all duration-200 text-white placeholder-gray-400 text-base"
+                    placeholder="Enter your email"
+                    required
+                    disabled={authForm.isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-white mb-2">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="password"
+                    value={authForm.password}
+                    onChange={(e) => setAuthForm(prev => ({ ...prev, password: e.target.value, error: '' }))}
+                    className="w-full pl-10 pr-4 py-4 glass border border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all duration-200 text-white placeholder-gray-400 text-base"
+                    placeholder="Create a password (min 6 characters)"
+                    required
+                    minLength={6}
+                    disabled={authForm.isLoading}
+                  />
+                </div>
+              </div>
+
               {authForm.error && (
                 <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
                   <p className="text-red-200 text-sm flex items-center gap-2">
@@ -441,15 +311,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               {authForm.isLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Creating Profile...
+                  Creating Account...
                 </>
               ) : (
                 <>
                   <User className="w-5 h-5" />
-                  Complete Setup
+                  Sign Up
                 </>
               )}
             </button>
+
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => setAuthStep('login')}
+                className="text-gray-400 hover:text-white transition-colors text-sm"
+              >
+                Already have an account? <span className="font-medium">Login</span>
+              </button>
+            </div>
           </form>
         )}
       </div>
