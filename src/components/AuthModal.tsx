@@ -60,7 +60,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         .from('user_profiles')
         .select('*')
         .eq('phone', formattedPhone)
-        .single();
+        .maybeSingle();
 
       // Send OTP via Supabase Auth
       const { data, error } = await supabase.auth.signInWithOtp({
@@ -180,7 +180,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         ?.from('user_profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       const userData = {
         ...user,

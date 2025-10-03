@@ -109,7 +109,7 @@ function App() {
           .from('user_profiles')
           .select('*')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
         
         const userData = {
           ...session.user,
@@ -132,7 +132,7 @@ function App() {
             .from('user_profiles')
             .select('*')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
           
           const userData = {
             ...session.user,

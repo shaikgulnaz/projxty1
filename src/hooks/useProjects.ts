@@ -82,7 +82,7 @@ export const useProjects = () => {
           hackathon_code: projectData.hackathonCode || null
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         throw error;
@@ -132,7 +132,7 @@ export const useProjects = () => {
         })
         .eq('id', id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         throw error;

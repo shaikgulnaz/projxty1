@@ -28,7 +28,7 @@ export const isUserAdmin = async (userId: string): Promise<boolean> => {
     .from('user_profiles')
     .select('role')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
   
   return profile?.role === 'admin';
 };
