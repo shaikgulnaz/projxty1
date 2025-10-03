@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Code2, Users, Star, TrendingUp, LogOut, Lock, User, Phone, X, Shield, MessageCircle, Sparkles, Menu, Home, Info, Briefcase, FolderOpen, Mail } from 'lucide-react';
+import { Search, Plus, Code2, Users, Star, TrendingUp, LogOut, User, X, Shield, MessageCircle, Sparkles, Menu, Home, Info, Briefcase, FolderOpen, Mail } from 'lucide-react';
 import { ProjectCard } from './components/ProjectCard';
 import { ProjectUpload } from './components/ProjectUpload';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { ShareModal } from './components/ShareModal';
 import { SearchBar } from './components/SearchBar';
+import { AuthModal } from './components/AuthModal';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
@@ -14,7 +15,7 @@ import { Project } from './types';
 import { useProjects } from './hooks/useProjects';
 import { useSearch } from './hooks/useSearch';
 import { useDebounce } from './hooks/useDebounce';
-import { signInWithOTP, verifyOTP, signOut } from './lib/supabase';
+import { supabase } from './lib/supabase';
 
 type Page = 'home' | 'about' | 'services' | 'projects' | 'contact';
 
@@ -41,24 +42,13 @@ function App() {
   const [showShare, setShowShare] = useState(false);
   const [sharingProject, setSharingProject] = useState<Project | null>(null);
   const [showAuth, setShowAuth] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authStep, setAuthStep] = useState<'phone' | 'otp'>('phone');
-  const [authForm, setAuthForm] = useState({ 
-    phone: '', 
-    otp: '', 
-    error: '', 
-    isLoading: false,
-    otpSent: false 
-  });
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   
   // Header scroll state
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  // Host credentials
-  const HOST_PHONE = '6361064550';
-  const GENERATED_OTP = '664477';
 
   // Navigation items
   const navigationItems = [
@@ -106,13 +96,63 @@ function App() {
     window.addEventListener('scroll', throttledHandleScroll, { passive: true });
     return () => window.removeEventListener('scroll', throttledHandleScroll);
   }, [lastScrollY]);
+  
   // Check authentication status on mount
   useEffect(() => {
-    const authStatus = localStorage.getItem('devcode_auth');
-    if (authStatus === 'authenticated') {
-      setIsAuthenticated(true);
+    const checkAuth = async () => {
+      if (!supabase) return;
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        // Get user profile
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        const userData = {
+          ...session.user,
+          profile: profile || null
+        };
+        
+        setUser(userData);
+        setIsAuthenticated(true);
+      }
+    };
+    
+    checkAuth();
+    
+    // Listen for auth changes
+    if (supabase) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session?.user) {
+          // Get user profile
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          const userData = {
+            ...session.user,
+            profile: profile || null
+          };
+          
+          setUser(userData);
+          setIsAuthenticated(true);
+        } else {
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+      });
+      
+      return () => subscription.unsubscribe();
     }
+  }, []);
 
+  // Check for shared project in URL
+  useEffect(() => {
     // Check for shared project in URL
     const urlParams = new URLSearchParams(window.location.search);
     const sharedProjectId = urlParams.get('project');
@@ -164,58 +204,19 @@ function App() {
     setShowShare(true);
   };
 
-  const handlePhoneSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthForm(prev => ({ ...prev, isLoading: true, error: '' }));
-
-    const result = await signInWithOTP(authForm.phone);
-    
-    if (result.success) {
-      setAuthForm(prev => ({ 
-        ...prev, 
-        isLoading: false, 
-        otpSent: true 
-      }));
-      setAuthStep('otp');
-    } else {
-      setAuthForm(prev => ({ 
-        ...prev, 
-        error: 'This phone number is not authorized for admin access.',
-        isLoading: false 
-      }));
-    }
-  };
-
-  const handleOtpSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthForm(prev => ({ ...prev, isLoading: true, error: '' }));
-
-    const result = await verifyOTP(authForm.phone, authForm.otp);
-    
-    if (result.success) {
-      setIsAuthenticated(true);
-      localStorage.setItem('devcode_auth', 'authenticated');
-      setShowAuth(false);
-      setAuthForm({ phone: '', otp: '', error: '', isLoading: false, otpSent: false });
-      setAuthStep('phone');
-    } else {
-      setAuthForm(prev => ({ 
-        ...prev, 
-        error: 'Invalid OTP. Please check and try again.',
-        isLoading: false 
-      }));
-    }
+  const handleAuthSuccess = (userData: any) => {
+    setUser(userData);
+    setIsAuthenticated(true);
+    setShowAuth(false);
   };
 
   const handleLogout = async () => {
-    await signOut();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('devcode_auth');
     setShowMobileMenu(false);
-  };
-
-  const handleAuthClose = () => {
-    setShowAuth(false);
   };
 
   const handleNavigate = (page: Page) => {
@@ -226,6 +227,11 @@ function App() {
     // Update URL without page reload
     window.history.pushState({}, '', page === 'home' ? '/' : `/${page}`);
   };
+
+  // Check if user is admin
+  const isAdmin = user?.profile?.role === 'admin' || 
+                  user?.email === 'admin@projxty.com' || 
+                  user?.email === 'projxty@gmail.com';
 
   // Show loading state
   if (loading) {
@@ -360,7 +366,7 @@ function App() {
                     className="p-3 bg-black border border-gray-600 text-white rounded-xl hover:bg-gray-900 transition-all duration-300 transform hover:scale-105"
                     title="Login"
                   >
-                    <Code2 className="w-5 h-5" />
+                    <User className="w-5 h-5" />
                   </button>
                 )}
               </div>
@@ -402,8 +408,8 @@ function App() {
                 {isAuthenticated ? (
                   <>
                     <div className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 mb-2">
-                      <Shield className="w-4 h-4" />
-                      Admin Mode Active
+                      <User className="w-4 h-4" />
+                      {user?.profile?.name || user?.phone || 'User'}
                     </div>
                     <button
                       onClick={handleLogout}
@@ -421,7 +427,7 @@ function App() {
                     }}
                     className="w-full flex items-center space-x-2 px-4 py-3 bg-black border border-gray-600 text-white rounded-lg hover:bg-gray-900 transition-all duration-300"
                   >
-                    <Code2 className="w-5 h-5" />
+                    <User className="w-5 h-5" />
                     <span>Login</span>
                   </button>
                 )}
@@ -452,16 +458,16 @@ function App() {
             selectedCategory={selectedCategory}
             isSearching={isSearching}
             searchStats={searchStats}
-            isAuthenticated={isAuthenticated}
+            isAuthenticated={isAdmin}
             onSearchChange={setSearchTerm}
             onCategoryChange={setSelectedCategory}
             onProjectClick={handleProjectClick}
             onShareProject={handleShareProject}
-            onEditProject={(project) => {
+            onEditProject={isAdmin ? (project) => {
               setEditingProject(project);
               setShowUpload(true);
-            }}
-            onDeleteProject={handleDeleteProject}
+            } : undefined}
+            onDeleteProject={isAdmin ? handleDeleteProject : undefined}
             onAddProject={() => {
               setEditingProject(null);
               setShowUpload(true);
@@ -494,141 +500,11 @@ function App() {
 
 
       {/* Auth Modal */}
-      {showAuth && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-          <div className="glass rounded-2xl shadow-2xl w-full max-w-sm border border-gray-600">
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-700">
-              <div className="flex items-center gap-3">
-                <div className="bg-black border border-gray-600 p-2 rounded-lg">
-                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </div>
-                <h2 className="text-lg sm:text-xl font-bold text-white">Login</h2>
-              </div>
-              <button
-                onClick={handleAuthClose}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors duration-200 touch-manipulation"
-              >
-                <X className="w-5 h-5 text-white/60" />
-              </button>
-            </div>
-
-            {authStep === 'phone' ? (
-              <form onSubmit={handlePhoneSubmit} className="p-4 sm:p-6">
-                <div className="mb-6">
-                  <p className="text-gray-300 text-sm mb-6 text-center">
-                    Enter your registered phone number to receive OTP
-                  </p>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-white mb-2">Phone Number</label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
-                        type="tel"
-                        value={authForm.phone}
-                        onChange={(e) => setAuthForm(prev => ({ ...prev, phone: e.target.value, error: '' }))}
-                        className="w-full pl-10 pr-4 py-4 glass border border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all duration-200 text-white placeholder-gray-400 text-base"
-                        placeholder="Enter phone number"
-                        required
-                        disabled={authForm.isLoading}
-                      />
-                    </div>
-                  </div>
-                  
-                  {authForm.error && (
-                    <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
-                      <p className="text-red-200 text-sm flex items-center gap-2">
-                        <X className="w-4 h-4" />
-                        {authForm.error}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={authForm.isLoading}
-                  className="w-full bg-black border border-gray-600 text-white py-4 px-6 rounded-xl font-medium hover:bg-gray-900 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 touch-manipulation"
-                >
-                  {authForm.isLoading ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Sending OTP...
-                    </>
-                  ) : (
-                    <>
-                      <Phone className="w-5 h-5" />
-                      Send OTP
-                    </>
-                  )}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleOtpSubmit} className="p-4 sm:p-6">
-                <div className="mb-6">
-                  <p className="text-gray-300 text-sm mb-6 text-center">
-                    Enter the 6-digit OTP sent to {authForm.phone}
-                  </p>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-white mb-2">OTP Code</label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
-                        type="text"
-                        value={authForm.otp}
-                        onChange={(e) => setAuthForm(prev => ({ ...prev, otp: e.target.value, error: '' }))}
-                        className="w-full pl-10 pr-4 py-4 glass border border-gray-600 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all duration-200 text-center text-lg tracking-widest text-white placeholder-gray-400"
-                        placeholder="000000"
-                        maxLength={6}
-                        required
-                        disabled={authForm.isLoading}
-                      />
-                    </div>
-                  </div>
-                  
-                  {authForm.error && (
-                    <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
-                      <p className="text-red-200 text-sm flex items-center gap-2">
-                        <X className="w-4 h-4" />
-                        {authForm.error}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <button
-                    type="submit"
-                    disabled={authForm.isLoading}
-                    className="w-full bg-black border border-gray-600 text-white py-4 px-6 rounded-xl font-medium hover:bg-gray-900 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 touch-manipulation"
-                  >
-                    {authForm.isLoading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Verifying...
-                      </>
-                    ) : (
-                      <>
-                        <User className="w-5 h-5" />
-                        Verify OTP
-                      </>
-                    )}
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setAuthStep('phone')}
-                    className="w-full text-gray-400 hover:text-white py-3 transition-colors touch-manipulation"
-                  >
-                    ← Back to phone number
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
+      <AuthModal
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
 
       {/* Project Upload Modal */}
       {showUpload && (
@@ -652,7 +528,7 @@ function App() {
           setSelectedProject(null);
         }}
         onShare={handleShareProject}
-        isAdmin={isAuthenticated}
+        isAdmin={isAdmin}
       />
 
       {/* Share Modal */}
