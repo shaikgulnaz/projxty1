@@ -20,15 +20,30 @@ export const supabase = isValidUrl && isValidKey
   ? createClient<Database>(supabaseUrl, supabaseAnonKey)
   : null;
 
-// Helper function to check if user is admin
-export const isUserAdmin = async (userId: string): Promise<boolean> => {
-  if (!supabase) return false;
+// Auth helper functions
+export const signInWithOTP = async (phone: string) => {
+  if (!supabase) return { success: false, error: 'Supabase not configured' };
   
-  const { data: profile } = await supabase
-    .from('user_profiles')
-    .select('role')
-    .eq('id', userId)
-    .maybeSingle();
+  // For demo purposes, we'll simulate OTP sending
+  // In production, you'd integrate with SMS service
+  return { success: phone === '6361064550' };
+};
+
+export const verifyOTP = async (phone: string, otp: string) => {
+  if (!supabase) return { success: false, error: 'Supabase not configured' };
   
-  return profile?.role === 'admin';
+  // For demo purposes, we'll check against hardcoded values
+  // In production, you'd verify against SMS service
+  if (phone === '6361064550' && otp === '664477') {
+    // Return success for demo authentication
+    return { success: true, data: { user: { id: 'demo-admin' } }, error: null };
+  }
+  return { success: false, error: { message: 'Invalid OTP' } };
+};
+
+export const signOut = async () => {
+  if (!supabase) return { success: false, error: 'Supabase not configured' };
+  
+  const { error } = await supabase.auth.signOut();
+  return { success: !error, error };
 };

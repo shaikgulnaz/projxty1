@@ -45,32 +45,6 @@ export interface Database {
           video_url?: string;
         };
       };
-      user_profiles: {
-        Row: {
-          id: string;
-          phone: string;
-          name: string;
-          role: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id: string;
-          phone: string;
-          name: string;
-          role?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          phone?: string;
-          name?: string;
-          role?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
     };
   };
 }
