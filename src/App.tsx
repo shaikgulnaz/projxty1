@@ -254,37 +254,43 @@ function App() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 sm:h-20">
-            {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <div className="bg-black border border-gray-600 p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-lg">
-                <Code2 className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                Projxty
-              </h1>
+            {/* Left Side: Logo + Navigation */}
+            <div className="flex items-center space-x-8">
+              {/* Logo - Clickable */}
+              <button
+                onClick={() => handleNavigate('home')}
+                className="flex items-center space-x-3 hover:opacity-80 transition-opacity duration-300"
+              >
+                <div className="bg-black border border-gray-600 p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-lg">
+                  <Code2 className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                  Projxty
+                </h1>
+              </button>
+
+              {/* Desktop Navigation */}
+              <nav className="hidden lg:flex items-center space-x-8">
+                {navigationItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavigate(item.id as Page)}
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                        currentPage === item.id
+                          ? 'bg-white text-black font-semibold'
+                          : 'text-gray-300 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </nav>
             </div>
-            
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
-              {navigationItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNavigate(item.id as Page)}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                      currentPage === item.id
-                        ? 'bg-white text-black font-semibold'
-                        : 'text-gray-300 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-            
+
             {/* Right Side Controls */}
             <div className="flex items-center space-x-3">
               {/* Admin Status */}
