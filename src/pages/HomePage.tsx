@@ -32,8 +32,8 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Half - Hero Content */}
             <div className="text-center lg:text-left slide-in">
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 neon-glow leading-tight">
-                Code That Actually <span className="gradient-text-fire">Slaps</span> 🔥
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                <span className="gradient-text">Code That Actually Slaps</span> 🔥
               </h1>
               <p className="text-xl sm:text-2xl text-gray-300 mb-8 leading-relaxed">
                 No cap - these projects are straight fire! 🚀 From AI that hits different to web apps that go hard. 

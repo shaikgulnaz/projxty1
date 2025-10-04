@@ -184,13 +184,50 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Gradient text */
+/* Gradient text animations */
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .gradient-text {
-  color: #ffffff;
+  background: linear-gradient(
+    90deg,
+    #60a5fa,
+    #a78bfa,
+    #ec4899,
+    #f472b6,
+    #60a5fa
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientFlow 4s ease infinite;
 }
 
 .gradient-text-fire {
-  color: #ffffff;
+  background: linear-gradient(
+    90deg,
+    #fbbf24,
+    #f59e0b,
+    #fb923c,
+    #f97316,
+    #ef4444,
+    #fbbf24
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientFlow 3s ease infinite;
 }
 
 /* Neon glow effect */
