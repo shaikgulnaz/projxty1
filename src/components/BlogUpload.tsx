@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Upload, FileText, Image as ImageIcon, Tag, Calendar, Eye, EyeOff } from 'lucide-react';
+import { X, Upload, FileText } from 'lucide-react';
 
 interface BlogUploadProps {
   onClose: () => void;
@@ -19,18 +19,8 @@ export interface BlogFormData {
 }
 
 export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
-  const [formData, setFormData] = useState<BlogFormData>({
-    title: '',
-    slug: '',
-    description: '',
-    html_content: '',
-    author: 'Admin',
-    featured_image: '',
-    tags: [],
-    published: false,
-    publish_date: new Date().toISOString().split('T')[0],
-  });
-  const [tagInput, setTagInput] = useState('');
+  const [title, setTitle] = useState('');
+  const [htmlContent, setHtmlContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [htmlFileName, setHtmlFileName] = useState('');
 
@@ -43,21 +33,13 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
       .trim();
   };
 
-  const handleTitleChange = (title: string) => {
-    setFormData({
-      ...formData,
-      title,
-      slug: generateSlug(title),
-    });
-  };
-
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type === 'text/html') {
       const reader = new FileReader();
       reader.onload = (event) => {
         const content = event.target?.result as string;
-        setFormData({ ...formData, html_content: content });
+        setHtmlContent(content);
         setHtmlFileName(file.name);
       };
       reader.readAsText(file);
@@ -66,34 +48,29 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
     }
   };
 
-  const handleAddTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, tagInput.trim()],
-      });
-      setTagInput('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter(tag => tag !== tagToRemove),
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.html_content || !formData.slug) {
-      alert('Please fill in all required fields');
+    if (!title || !htmlContent) {
+      alert('Please fill in title and upload HTML content');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await onSubmit(formData);
+      const blogData: BlogFormData = {
+        title,
+        slug: generateSlug(title),
+        description: '',
+        html_content: htmlContent,
+        author: 'Admin',
+        featured_image: '',
+        tags: [],
+        published: true,
+        publish_date: new Date().toISOString().split('T')[0],
+      };
+
+      await onSubmit(blogData);
       onClose();
     } catch (error) {
       console.error('Error submitting blog post:', error);
@@ -105,7 +82,7 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="glass rounded-2xl max-w-4xl w-full my-8 border border-gray-700">
+      <div className="glass rounded-2xl max-w-2xl w-full my-8 border border-gray-700">
         <div className="flex justify-between items-center p-6 border-b border-gray-700">
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
             <FileText className="w-6 h-6" />
@@ -126,41 +103,11 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
             </label>
             <input
               type="text"
-              value={formData.title}
-              onChange={(e) => handleTitleChange(e.target.value)}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:border-white focus:outline-none transition-colors"
               placeholder="Enter blog post title"
               required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Slug (URL) *
-            </label>
-            <input
-              type="text"
-              value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-              className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:border-white focus:outline-none transition-colors font-mono text-sm"
-              placeholder="blog-post-url"
-              required
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              This will be used in the URL: /blog/{formData.slug}
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Description
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:border-white focus:outline-none transition-colors resize-none"
-              rows={3}
-              placeholder="Brief description of the blog post"
             />
           </div>
 
@@ -178,11 +125,11 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
             />
             <label
               htmlFor="html-upload"
-              className="w-full flex items-center justify-center gap-3 px-4 py-8 bg-black/50 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-white hover:bg-white/5 transition-all"
+              className="w-full flex items-center justify-center gap-3 px-4 py-12 bg-black/50 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-white hover:bg-white/5 transition-all"
             >
-              <FileText className="w-8 h-8 text-gray-400" />
+              <FileText className="w-10 h-10 text-gray-400" />
               <div className="text-center">
-                <p className="text-white font-medium">
+                <p className="text-white font-medium text-lg">
                   {htmlFileName || 'Click to upload HTML file'}
                 </p>
                 <p className="text-sm text-gray-400 mt-1">
@@ -190,107 +137,6 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
                 </p>
               </div>
             </label>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4" />
-                Featured Image URL
-              </label>
-              <input
-                type="url"
-                value={formData.featured_image}
-                onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
-                className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:border-white focus:outline-none transition-colors"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Author
-              </label>
-              <input
-                type="text"
-                value={formData.author}
-                onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:border-white focus:outline-none transition-colors"
-                placeholder="Author name"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-              <Tag className="w-4 h-4" />
-              Tags
-            </label>
-            <div className="flex gap-2 mb-3">
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-                className="flex-1 px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:border-white focus:outline-none transition-colors"
-                placeholder="Add tags"
-              />
-              <button
-                type="button"
-                onClick={handleAddTag}
-                className="px-6 py-3 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium"
-              >
-                Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 bg-white/10 border border-gray-700 rounded-full text-sm text-gray-300 flex items-center gap-2"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag(tag)}
-                    className="hover:text-white transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Publish Date
-              </label>
-              <input
-                type="date"
-                value={formData.publish_date}
-                onChange={(e) => setFormData({ ...formData, publish_date: e.target.value })}
-                className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:border-white focus:outline-none transition-colors"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                {formData.published ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                Status
-              </label>
-              <label className="flex items-center gap-3 px-4 py-3 bg-black/50 border border-gray-700 rounded-lg cursor-pointer hover:bg-white/5 transition-colors">
-                <input
-                  type="checkbox"
-                  checked={formData.published}
-                  onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-                  className="w-5 h-5"
-                />
-                <span className="text-white">Publish immediately</span>
-              </label>
-            </div>
           </div>
 
           <div className="flex gap-3 pt-6 border-t border-gray-700">
