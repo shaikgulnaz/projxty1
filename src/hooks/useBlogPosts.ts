@@ -54,12 +54,25 @@ export function useBlogPosts() {
 
   const addBlogPost = async (blogData: Omit<BlogPost, 'id' | 'created_at' | 'updated_at' | 'views'>) => {
     try {
+      const insertData = {
+        title: blogData.title,
+        slug: blogData.slug,
+        html_content: blogData.html_content,
+        author: blogData.author || 'Admin',
+        publish_date: blogData.publish_date,
+        published: blogData.published,
+        excerpt: blogData.description || '',
+        description: blogData.description || null,
+        image: blogData.featured_image || '',
+        featured_image: blogData.featured_image || null,
+        category: 'General',
+        tags: blogData.tags || [],
+        views: 0,
+      };
+
       const { data, error } = await supabase
         .from('blog_posts')
-        .insert([{
-          ...blogData,
-          views: 0,
-        }])
+        .insert([insertData])
         .select()
         .single();
 
