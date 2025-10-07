@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Upload, FileText } from 'lucide-react';
+import { X, FileText } from 'lucide-react';
 
 interface BlogUploadProps {
   onClose: () => void;
@@ -22,7 +22,6 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
   const [title, setTitle] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [htmlFileName, setHtmlFileName] = useState('');
 
   const generateSlug = (title: string) => {
     return title
@@ -33,26 +32,11 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
       .trim();
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type === 'text/html') {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const content = event.target?.result as string;
-        setHtmlContent(content);
-        setHtmlFileName(file.name);
-      };
-      reader.readAsText(file);
-    } else {
-      alert('Please upload a valid HTML file');
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title || !htmlContent) {
-      alert('Please fill in title and upload HTML content');
+      alert('Please fill in title and HTML content');
       return;
     }
 
@@ -112,31 +96,20 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-              <Upload className="w-4 h-4" />
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               HTML Content *
             </label>
-            <input
-              type="file"
-              accept=".html"
-              onChange={handleFileUpload}
-              className="hidden"
-              id="html-upload"
+            <textarea
+              value={htmlContent}
+              onChange={(e) => setHtmlContent(e.target.value)}
+              className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:border-white focus:outline-none transition-colors resize-none font-mono text-sm"
+              rows={12}
+              placeholder="Paste your HTML content here..."
+              required
             />
-            <label
-              htmlFor="html-upload"
-              className="w-full flex items-center justify-center gap-3 px-4 py-12 bg-black/50 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-white hover:bg-white/5 transition-all"
-            >
-              <FileText className="w-10 h-10 text-gray-400" />
-              <div className="text-center">
-                <p className="text-white font-medium text-lg">
-                  {htmlFileName || 'Click to upload HTML file'}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">
-                  Upload your blog post as an HTML file
-                </p>
-              </div>
-            </label>
+            <p className="text-xs text-gray-500 mt-1">
+              Paste your complete HTML blog post content
+            </p>
           </div>
 
           <div className="flex gap-3 pt-6 border-t border-gray-700">
@@ -153,7 +126,7 @@ export default function BlogUpload({ onClose, onSubmit }: BlogUploadProps) {
               disabled={isSubmitting}
               className="flex-1 px-6 py-3 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Uploading...' : 'Upload Blog Post'}
+              {isSubmitting ? 'Publishing...' : 'Publish Blog Post'}
             </button>
           </div>
         </form>
