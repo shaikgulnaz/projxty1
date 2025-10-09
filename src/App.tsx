@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Code2, Users, Star, TrendingUp, LogOut, Lock, User, Phone, X, Shield, MessageCircle, Sparkles, Menu, Home, Info, Briefcase, FolderOpen, Mail } from 'lucide-react';
+import { Search, Plus, Code2, Users, Star, TrendingUp, LogOut, Lock, User, Phone, X, Shield, MessageCircle, Sparkles, Menu, Home, Info, Briefcase, FolderOpen, Mail, BookOpen } from 'lucide-react';
 import { ProjectCard } from './components/ProjectCard';
 import { ProjectUpload } from './components/ProjectUpload';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
@@ -11,16 +11,22 @@ import { ServicesPage } from './pages/ServicesPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ContactPage } from './pages/ContactPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
+import BlogPage from './pages/BlogPage';
+import BlogDetailPage from './pages/BlogDetailPage';
+import BlogUpload from './components/BlogUpload';
+import { useBlogPosts } from './hooks/useBlogPosts';
+import type { BlogFormData } from './components/BlogUpload';
 import { Project } from './types';
 import { useProjects } from './hooks/useProjects';
 import { useSearch } from './hooks/useSearch';
 import { useDebounce } from './hooks/useDebounce';
 import { signOut } from './lib/supabase';
 
-type Page = 'home' | 'about' | 'services' | 'projects' | 'contact' | 'admin';
+type Page = 'home' | 'about' | 'services' | 'projects' | 'blog' | 'contact' | 'admin';
 
 function App() {
   const { projects, loading, error, addProject, updateProject, deleteProject } = useProjects();
+  const { blogPosts, addBlogPost } = useBlogPosts();
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -36,6 +42,8 @@ function App() {
   });
   
   const [showUpload, setShowUpload] = useState(false);
+  const [showBlogUpload, setShowBlogUpload] = useState(false);
+  const [selectedBlogSlug, setSelectedBlogSlug] = useState<string | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showProjectDetail, setShowProjectDetail] = useState(false);
@@ -54,6 +62,7 @@ function App() {
     { id: 'about', label: 'About', icon: Info },
     { id: 'services', label: 'Services', icon: Briefcase },
     { id: 'projects', label: 'Projects', icon: FolderOpen },
+    { id: 'blog', label: 'Blog', icon: BookOpen },
     { id: 'contact', label: 'Contact', icon: Mail },
   ];
 
@@ -164,10 +173,30 @@ function App() {
   const handleNavigate = (page: Page) => {
     setCurrentPage(page);
     setShowMobileMenu(false);
+    setSelectedBlogSlug(null);
     // Scroll to top of page
     window.scrollTo({ top: 0, behavior: 'smooth' });
     // Update URL without page reload
     window.history.pushState({}, '', page === 'home' ? '/' : `/${page}`);
+  };
+
+  const handleBlogSelect = (slug: string) => {
+    setSelectedBlogSlug(slug);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBlogBack = () => {
+    setSelectedBlogSlug(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleAddBlogPost = async (blogData: BlogFormData) => {
+    const result = await addBlogPost(blogData);
+    if (result.success) {
+      setShowBlogUpload(false);
+    } else {
+      alert(result.error || 'Failed to add blog post. Please ensure Supabase is connected.');
+    }
   };
 
   useEffect(() => {
@@ -409,6 +438,15 @@ function App() {
             }}
           />
         )}
+            {currentPage === 'blog' && (
+              <>
+                {selectedBlogSlug ? (
+                  <BlogDetailPage slug={selectedBlogSlug} onBack={handleBlogBack} />
+                ) : (
+                  <BlogPage onBlogSelect={handleBlogSelect} />
+                )}
+              </>
+            )}
             {currentPage === 'contact' && <ContactPage />}
           </>
         )}
@@ -472,6 +510,24 @@ function App() {
         }}
       />
 
+      {/* Blog Upload Modal */}
+      {showBlogUpload && (
+        <BlogUpload
+          onClose={() => setShowBlogUpload(false)}
+          onSubmit={handleAddBlogPost}
+        />
+      )}
+
+      {/* Admin FAB for Blog Upload */}
+      {isAuthenticated && currentPage === 'blog' && !selectedBlogSlug && (
+        <button
+          onClick={() => setShowBlogUpload(true)}
+          className="fixed bottom-24 right-4 sm:bottom-4 sm:right-24 z-40 p-4 bg-white text-black rounded-full shadow-lg hover:scale-110 transition-transform duration-300 group"
+          title="Upload Blog Post"
+        >
+          <Plus className="w-6 h-6" />
+        </button>
+      )}
     </div>
   );
 }

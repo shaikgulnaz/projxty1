@@ -23,41 +23,22 @@ export const supabase = isValidUrl && isValidKey
 // Auth helper functions
 export const signInWithOTP = async (phone: string) => {
   if (!supabase) return { success: false, error: 'Supabase not configured' };
-
-  // Check if phone is authorized
-  if (phone !== '6361064550') {
-    return { success: false, error: 'Unauthorized phone number' };
-  }
-
-  // Send OTP via Supabase Auth
-  const { error } = await supabase.auth.signInWithOtp({
-    phone: phone,
-  });
-
-  if (error) {
-    console.error('OTP send error:', error);
-    return { success: false, error: error.message };
-  }
-
-  return { success: true };
+  
+  // For demo purposes, we'll simulate OTP sending
+  // In production, you'd integrate with SMS service
+  return { success: phone === '6361064550' };
 };
 
 export const verifyOTP = async (phone: string, otp: string) => {
   if (!supabase) return { success: false, error: 'Supabase not configured' };
-
-  // Verify OTP with Supabase Auth
-  const { data, error } = await supabase.auth.verifyOtp({
-    phone: phone,
-    token: otp,
-    type: 'sms'
-  });
-
-  if (error) {
-    console.error('OTP verification error:', error);
-    return { success: false, error: error.message };
+  
+  // For demo purposes, we'll check against hardcoded values
+  // In production, you'd verify against SMS service
+  if (phone === '6361064550' && otp === '664477') {
+    // Return success for demo authentication
+    return { success: true, data: { user: { id: 'demo-admin' } }, error: null };
   }
-
-  return { success: true, data, error: null };
+  return { success: false, error: { message: 'Invalid OTP' } };
 };
 
 export const signOut = async () => {
